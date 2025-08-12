@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMI Calculator & Loan Optimizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>EMI Calculator & Loan Optimizer</h1>
+            <p>Calculate your EMI and find the best prepayment strategy</p>
+        </header>
+
+        <div class="calculator-section">
+            <div class="input-group">
+                <label for="principal">Outstanding Principal Amount (₹)</label>
+                <input type="text" id="principal" value="10,00,000" min="1000" step="1000" placeholder="Enter loan amount">
+            </div>
+
+            <div class="input-group">
+                <label for="rate">Annual Interest Rate (%)</label>
+                <input type="number" id="rate" value="8.50" min="0.01" max="50" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label for="tenure">Loan Tenure (Years)</label>
+                <input type="number" id="tenure" value="20" min="1" max="50" step="1">
+            </div>
+
+            <button id="calculate" class="btn-primary">Calculate EMI</button>
+        </div>
+
+        <div class="results-section" id="results" style="display: none;">
+            <div class="emi-result">
+                <h2>Current EMI Details</h2>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="label">Monthly EMI:</span>
+                        <span class="value" id="emi-amount">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Total Interest:</span>
+                        <span class="value" id="total-interest">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="label">Total Amount:</span>
+                        <span class="value" id="total-amount">₹0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prepayment-section">
+                <h2>Prepayment Strategy</h2>
+
+                <div class="strategy-tabs">
+                    <button class="tab-btn active" data-tab="percentage">By Percentage</button>
+                    <button class="tab-btn" data-tab="amount">By EMI Amount</button>
+                    <button class="tab-btn" data-tab="partpayment">Part Payment</button>
+                    <button class="tab-btn" data-tab="ratechange">Rate Change</button>
+                </div>
+
+                <div id="percentage-tab" class="tab-content active">
+                    <div class="input-group">
+                        <label for="increase-percent">EMI Increase Percentage (%)</label>
+                        <input type="number" id="increase-percent" value="10" min="1" max="100" step="1">
+                        <button id="calculate-prepayment" class="btn-secondary">Calculate Savings</button>
+                    </div>
+                </div>
+
+                <div id="amount-tab" class="tab-content">
+                    <div class="input-group">
+                        <label for="custom-emi">Custom EMI Amount (₹)</label>
+                        <input type="number" id="custom-emi" min="1000" step="100" placeholder="Enter your desired EMI">
+                        <button id="calculate-custom-emi" class="btn-secondary">Calculate New Tenure</button>
+                    </div>
+                </div>
+
+                <div id="partpayment-tab" class="tab-content">
+                    <div class="input-group">
+                        <label for="part-payment-amount">Part Payment Amount (₹)</label>
+                        <input type="number" id="part-payment-amount" min="1000" step="1000"
+                            placeholder="Enter lump sum amount">
+                    </div>
+                    <div class="input-group">
+                        <label for="part-payment-month">Payment After Months</label>
+                        <input type="number" id="part-payment-month" min="1" max="240" value="12"
+                            placeholder="Number of months from now">
+                    </div>
+                    <div class="input-group">
+                        <label for="part-payment-option">Reduce:</label>
+                        <select id="part-payment-option">
+                            <option value="tenure">Loan Tenure</option>
+                            <option value="emi">EMI Amount</option>
+                        </select>
+                    </div>
+                    <button id="calculate-part-payment" class="btn-secondary">Calculate Impact</button>
+                </div>
+
+                <div id="ratechange-tab" class="tab-content">
+                    <div class="input-group">
+                        <label for="new-interest-rate">New Interest Rate (%)</label>
+                        <input type="number" id="new-interest-rate" min="0.01" max="50" step="0.01" value="7.50"
+                            placeholder="Enter new interest rate">
+                    </div>
+                    <div class="input-group">
+                        <label for="rate-change-month">Rate Change After Months</label>
+                        <input type="number" id="rate-change-month" min="1" max="240" value="12"
+                            placeholder="Number of months from now">
+                    </div>
+                    <div class="input-group">
+                        <label for="rate-change-option">Keep:</label>
+                        <select id="rate-change-option">
+                            <option value="tenure">Same Tenure</option>
+                            <option value="emi">Same EMI</option>
+                        </select>
+                    </div>
+                    <button id="calculate-rate-change" class="btn-secondary">Calculate Impact</button>
+                </div>
+
+                <div id="prepayment-results" class="prepayment-results"></div>
+            </div>
+
+            <div class="chart-section">
+                <h2>Loan Amortization Analysis</h2>
+                <div class="loan-closure-info" id="loan-closure-info"></div>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3>Original Loan Schedule</h3>
+                        <canvas id="originalChart"></canvas>
+                    </div>
+                    <div class="chart-container" id="comparison-chart-container" style="display: none;">
+                        <h3>After Prepayment/Part Payment</h3>
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

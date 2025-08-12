@@ -1,0 +1,360 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+header p {
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.calculator-section {
+    padding: 30px;
+    background: #f8f9fa;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+#principal {
+    font-family: 'Courier New', monospace;
+    text-align: right;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-primary, .btn-secondary {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 100%;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.results-section {
+    padding: 30px;
+}
+
+.emi-result {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.emi-result h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.result-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.result-item .label {
+    display: block;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+
+.result-item .value {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.prepayment-section {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.prepayment-section h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.strategy-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: #e9ecef;
+    color: #6c757d;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.tab-btn:hover:not(.active) {
+    background: #dee2e6;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.chart-section {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 12px;
+    margin-top: 30px;
+}
+
+.chart-section h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.charts-grid.comparison {
+    grid-template-columns: 1fr;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container h3 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.loan-closure-info {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.loan-closure-info h3 {
+    margin-bottom: 10px;
+}
+
+.closure-dates {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.closure-date-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.closure-date-item .label {
+    display: block;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+
+.closure-date-item .value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.prepayment-results {
+    margin-top: 20px;
+}
+
+.savings-card {
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.savings-card h3 {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.savings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.savings-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.savings-item .label {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.9;
+    margin-bottom: 3px;
+}
+
+.savings-item .value {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        border-radius: 10px;
+    }
+    
+    header {
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .calculator-section, .results-section {
+        padding: 20px;
+    }
+    
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+    
+
+    
+    .chart-container {
+        height: 300px;
+    }
+}
