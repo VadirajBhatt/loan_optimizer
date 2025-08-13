@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EMI Calculator & Loan Optimizer</title>
+    <title>Loan Optimization Calculator</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -13,12 +13,40 @@
 <body>
     <div class="container">
         <header>
-            <button class="theme-toggle" id="theme-toggle">🌙 Dark</button>
-            <h1>EMI Calculator & Loan Optimizer</h1>
-            <p>Calculate your EMI and find the best prepayment strategy</p>
+            <button class="theme-toggle" id="theme-toggle">🌙</button>
+            <h1>🚀 Loan Optimization Calculator</h1>
+            <p>💰 Calculate, Optimize & Save Lakhs in Interest!</p>
+
+            <div class="quick-instructions">
+                <a href="#calculator-section" class="instruction-step">
+                    <!--span class="step-number">1</span-->
+                    <span class="step-text">Enter Details</span>
+                </a>
+                <!--div class="step-connector"></div-->
+                <a href="#advanced-scenarios" class="instruction-step">
+                    <!--span class="step-number">2</span-->
+                    <span class="step-text">Add Events</span>
+                </a>
+                <!--div class="step-connector"></div-->
+                <a href="#results" class="instruction-step">
+                    <!--span class="step-number">3</span-->
+                    <span class="step-text">See Savings</span>
+                </a>
+            </div>
+            <br>
+
+            <h2>🧠 Smart Strategies to Close Loans Early</h2>
+            <p>
+                <div>
+                    <span>🧮 Choose a Shorter Tenure</span>
+                    <span>💸 Make Regular Prepayments</span>
+                    <span>🔁 Opt for a Lower Interest Rate</span>
+                    <span>📈 Increase EMI When Income Grows</span>
+                </div>
+            </p>
         </header>
 
-        <div class="calculator-section">
+        <div class="calculator-section" id="calculator-section">
             <div class="input-group">
                 <label for="principal">Outstanding Principal Amount (₹)</label>
                 <input type="text" id="principal" value="25,00,000" min="1000" step="1000" placeholder="Enter loan amount">
@@ -26,7 +54,7 @@
 
             <div class="input-group">
                 <label for="rate">Annual Interest Rate (%)</label>
-                <input type="number" id="rate" value="8.90" min="0.01" max="50" step="0.01">
+                <input type="number" id="rate" value="8.90" min="0.05" max="50" step="0.05">
             </div>
 
             <div class="input-group">
@@ -39,7 +67,7 @@
                 <input type="date" id="loan-start-date" value="">
             </div>
 
-            <button id="calculate" class="btn-primary">Calculate EMI</button>
+            <button id="calculate" class="btn-primary" style="display: none;">Calculate EMI</button>
         </div>
 
         <div class="results-section" id="results" style="display: none;">
@@ -62,15 +90,15 @@
             </div>
 
             <div class="prepayment-section">
-                <h2>Prepayment Strategy</h2>
+                <h2>🚀 Supercharge Your Savings Strategy!</h2>
 
-                <div class="advanced-scenarios">
-                    <h2 style="text-align: center; color: var(--text-color); margin-bottom: 10px;">Advanced Loan Optimization</h2>
-                    <p style="text-align: center; margin-bottom: 25px; color: var(--text-color); opacity: 0.7;">Plan multiple part payments, rate changes, and EMI strategies throughout your loan journey.</p>
-                    
+                <div class="advanced-scenarios" id="advanced-scenarios">
+                    <h2 style="text-align: center; color: var(--text-color); margin-bottom: 10px;">⚡ Ultimate Loan Optimization Calculator</h2>
+                    <p style="text-align: center; margin-bottom: 25px; color: var(--text-color); opacity: 0.7;">Unleash the power of smart financial planning! Combine multiple strategies and watch your savings skyrocket! 🎯</p>
+
                     <div class="scenario-section">
-                        <h4>💰 Part Payments</h4>
-                        <p style="color: var(--text-color); opacity: 0.7; font-size: 0.9rem; margin-bottom: 10px;">Add lump sum payments to reduce principal</p>
+                        <h4>💰 Power-Packed Part Payments</h4>
+                        <p style="color: var(--text-color); opacity: 0.7; font-size: 0.9rem; margin-bottom: 10px;">Slash your principal with strategic lump sum payments and accelerate your freedom! 🚀</p>
                         <div id="part-payments-list"></div>
                         <button id="add-part-payment" class="btn-secondary" style="margin-bottom: 15px;">Add Part Payment</button>
                     </div>
@@ -91,20 +119,25 @@
 
                     <div class="scenario-section">
                         <h4>📊 Gradual EMI Increase</h4>
-                        <p style="color: var(--text-color); opacity: 0.7; font-size: 0.9rem; margin-bottom: 10px;">Automatically increase EMI by a percentage every year</p>
+                        <p style="color: var(--text-color); opacity: 0.7; font-size: 0.9rem; margin-bottom: 10px;">
+                            Automatically increase EMI by a percentage every year</p>
                         <div class="gradual-increase-controls">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <div
+                                style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                                 <div>
                                     <label for="gradual-start-date" style="font-size: 0.9rem;">Start Date:</label>
                                     <input type="date" id="gradual-start-date" style="width: 100%;">
                                 </div>
                                 <div>
-                                    <label for="gradual-increase-percent" style="font-size: 0.9rem;">Annual Increase (%):</label>
-                                    <input type="number" id="gradual-increase-percent" value="5" min="1" max="50" step="0.5" style="width: 100%;">
+                                    <label for="gradual-increase-percent" style="font-size: 0.9rem;">Annual Increase
+                                        (%):</label>
+                                    <input type="number" id="gradual-increase-percent" value="5" min="1" max="50"
+                                        step="0.5" style="width: 100%;">
                                 </div>
                                 <div>
                                     <label for="gradual-max-years" style="font-size: 0.9rem;">For Years:</label>
-                                    <input type="number" id="gradual-max-years" value="10" min="1" max="30" step="1" style="width: 100%;">
+                                    <input type="number" id="gradual-max-years" value="10" min="1" max="30" step="1"
+                                        style="width: 100%;">
                                 </div>
                             </div>
                             <button id="add-gradual-increase" class="btn-secondary">Add Gradual Increase</button>
@@ -112,10 +145,12 @@
                     </div>
 
                     <div style="text-align: center; margin-top: 25px;">
-                        <button id="calculate-advanced-scenario" class="btn-primary" style="padding: 15px 40px; font-size: 1.1rem;">Calculate Optimized Scenario</button>
-                        <button id="clear-all-events" class="btn-secondary" style="margin-left: 15px;">Clear All Events</button>
+                        <button id="calculate-advanced-scenario" class="btn-primary"
+                            style="padding: 15px 40px; font-size: 1.1rem;">Calculate Optimized Scenario</button>
+                        <button id="clear-all-events" class="btn-secondary" style="margin-left: 15px;">Clear All
+                            Events</button>
                     </div>
-                    
+
 
                 </div>
 
@@ -131,7 +166,7 @@
                         <canvas id="originalChart"></canvas>
                     </div>
                     <div class="chart-container" id="comparison-chart-container" style="display: none;">
-                        <h3>After Prepayment/Part Payment</h3>
+                        <h3>Optimized Loan Schedule</h3>
                         <canvas id="comparisonChart"></canvas>
                     </div>
                 </div>
@@ -159,8 +194,10 @@
 
         <footer class="footer">
             <div class="footer-content">
-                <p>Crafted with 🔥 passion by <strong>Vadiraj Bhatt</strong> powered by the incredible <strong>Kiro AI</strong>!</p>
-                <p style="font-size: 0.8rem; opacity: 0.8;">Huge shoutout to the amazing Kiro team - you've built something truly revolutionary! 🚀✨</p>
+                <p>Crafted with 🔥 passion by <strong>Vadiraj Bhatt</strong> powered by the incredible <strong>Kiro
+                        AI</strong>!</p>
+                <p style="font-size: 0.8rem; opacity: 0.8;">Huge shoutout to the amazing Kiro team - you've built
+                    something truly revolutionary! 🚀✨</p>
             </div>
         </footer>
     </div>
