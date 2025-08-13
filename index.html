@@ -32,6 +32,11 @@
                 <input type="number" id="tenure" value="20" min="1" max="50" step="1">
             </div>
 
+            <div class="input-group">
+                <label for="loan-start-date">Loan Start Date</label>
+                <input type="date" id="loan-start-date" value="">
+            </div>
+
             <button id="calculate" class="btn-primary">Calculate EMI</button>
         </div>
 
@@ -137,6 +142,25 @@
                         <h3>After Prepayment/Part Payment</h3>
                         <canvas id="comparisonChart"></canvas>
                     </div>
+                </div>
+            </div>
+
+            <div class="installment-section" id="installment-section" style="display: none;">
+                <h2>Detailed Installment Schedule</h2>
+                <div class="table-controls">
+                    <div class="table-options">
+                        <div class="option-group">
+                            <label for="show-years">Show:</label>
+                            <select id="show-years">
+                                <option value="all">All Years</option>
+                                <option value="5">First 5 Years</option>
+                                <option value="10">First 10 Years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <div id="installment-table" class="installment-table"></div>
                 </div>
             </div>
         </div>

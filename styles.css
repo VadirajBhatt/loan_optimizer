@@ -68,6 +68,21 @@ header p {
     text-align: right;
 }
 
+#loan-start-date {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+#loan-start-date::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+#loan-start-date::-webkit-calendar-picker-indicator:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+}
+
 .input-group input:focus {
     outline: none;
     border-color: #667eea;
@@ -158,21 +173,26 @@ header p {
 
 .strategy-tabs {
     display: flex;
+    flex-wrap: wrap;
     margin-bottom: 20px;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    gap: 2px;
 }
 
 .tab-btn {
     flex: 1;
-    padding: 12px 20px;
+    min-width: 120px;
+    padding: 12px 8px;
     border: none;
     background: #e9ecef;
     color: #6c757d;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    text-align: center;
+    font-size: 0.9rem;
 }
 
 .tab-btn.active {
@@ -270,6 +290,162 @@ header p {
     font-weight: 600;
 }
 
+.installment-section {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 12px;
+    margin-top: 30px;
+}
+
+.installment-section h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.table-controls {
+    margin-bottom: 20px;
+}
+
+.table-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.option-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.option-group label {
+    font-weight: 600;
+    color: #2c3e50;
+    white-space: nowrap;
+}
+
+.table-container {
+    position: relative;
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.installment-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.installment-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+}
+
+.installment-table th {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 6px 4px;
+    text-align: center;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-size: 0.7rem;
+    line-height: 1.2;
+}
+
+.installment-table td {
+    padding: 4px 3px;
+    text-align: center;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.7rem;
+    line-height: 1.3;
+}
+
+.installment-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.installment-table tbody tr:nth-child(even) {
+    background-color: #fdfdfd;
+}
+
+.installment-table tbody tr:nth-child(even):hover {
+    background-color: #f0f0f0;
+}
+
+.currency {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+}
+
+.year-header {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
+    color: white !important;
+    font-weight: bold;
+    font-size: 0.75rem;
+    padding: 4px 3px;
+}
+
+.year-total {
+    background-color: #e8f4f8 !important;
+    font-weight: bold;
+    border-top: 2px solid #3498db;
+    font-size: 0.65rem;
+    padding: 3px 2px;
+}
+
+.part-payment-row {
+    background-color: #fff3cd !important;
+    border: 2px solid #ffc107;
+}
+
+.part-payment-row td {
+    font-weight: bold;
+    color: #856404;
+}
+
+.rate-change-row {
+    background-color: #d1ecf1 !important;
+    border: 2px solid #17a2b8;
+}
+
+.rate-change-row td {
+    font-weight: bold;
+    color: #0c5460;
+}
+
+.comparison-header {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+    color: white !important;
+    font-size: 0.65rem;
+    padding: 5px 3px;
+}
+
+.savings-positive {
+    background-color: #d4edda !important;
+    color: #155724;
+    font-weight: bold;
+    font-size: 0.6rem;
+}
+
+.savings-negative {
+    background-color: #f8d7da !important;
+    color: #721c24;
+    font-weight: bold;
+    font-size: 0.6rem;
+}
+
+.comparison-column {
+    border-left: 2px solid #dee2e6;
+}
+
 select {
     width: 100%;
     padding: 12px 15px;
@@ -331,30 +507,291 @@ select:focus {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
     .container {
-        margin: 10px;
+        margin: 0;
         border-radius: 10px;
+        max-width: 100%;
     }
     
     header {
-        padding: 20px;
+        padding: 20px 15px;
     }
     
     header h1 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+        line-height: 1.2;
+    }
+    
+    header p {
+        font-size: 0.95rem;
     }
     
     .calculator-section, .results-section {
-        padding: 20px;
+        padding: 15px;
+    }
+    
+    .prepayment-section, .chart-section {
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    .strategy-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    
+    .tab-btn {
+        padding: 16px 8px;
+        font-size: 0.85rem;
+        text-align: center;
+        border-radius: 8px;
+        margin-bottom: 0;
+        min-width: auto;
+        line-height: 1.2;
+        word-wrap: break-word;
+    }
+    
+    .tab-btn:nth-child(3),
+    .tab-btn:nth-child(4) {
+        margin-top: 4px;
     }
     
     .result-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
     
-
+    .result-item {
+        padding: 12px;
+    }
+    
+    .result-item .value {
+        font-size: 1.2rem;
+    }
+    
+    .savings-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .savings-item {
+        padding: 8px;
+    }
+    
+    .savings-item .value {
+        font-size: 1rem;
+    }
+    
+    .closure-dates {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .closure-date-item {
+        padding: 12px;
+    }
     
     .chart-container {
-        height: 300px;
+        height: 280px;
+        padding: 10px;
+    }
+    
+    .chart-container h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    .loan-closure-info {
+        padding: 15px;
+    }
+    
+    .loan-closure-info h3 {
+        font-size: 1.1rem;
+    }
+    
+    .installment-section {
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    .table-options {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .option-group {
+        justify-content: center;
+    }
+    
+    .installment-table table {
+        font-size: 0.6rem;
+    }
+    
+    .installment-table th,
+    .installment-table td {
+        padding: 3px 2px;
+    }
+    
+    .installment-table th {
+        font-size: 0.55rem;
+        line-height: 1.1;
+    }
+    
+    .installment-table td {
+        font-size: 0.55rem;
+        line-height: 1.2;
+    }
+    
+    .currency {
+        font-size: 0.5rem;
+    }
+    
+    .input-group {
+        margin-bottom: 15px;
+    }
+    
+    .input-group label {
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+    }
+    
+    .input-group input, select {
+        padding: 14px 12px;
+        font-size: 1rem;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 14px 20px;
+        font-size: 1rem;
+        margin-top: 12px;
+    }
+    
+    .emi-result {
+        padding: 20px 15px;
+    }
+    
+    .emi-result h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    
+    .savings-card {
+        padding: 15px;
+    }
+    
+    .savings-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+    
+    header h1 {
+        font-size: 1.4rem;
+    }
+    
+    header p {
+        font-size: 0.9rem;
+    }
+    
+    .calculator-section, .results-section, .prepayment-section, .chart-section {
+        padding: 12px;
+    }
+    
+    .strategy-tabs {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+    
+    .tab-btn {
+        padding: 14px 10px;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+    
+    .tab-btn:nth-child(3),
+    .tab-btn:nth-child(4) {
+        margin-top: 0;
+    }
+    
+    .savings-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .result-item .value {
+        font-size: 1.1rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+        padding: 8px;
+    }
+    
+    .input-group input, select {
+        padding: 12px 10px;
+        font-size: 0.95rem;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+    
+    .installment-section {
+        padding: 10px;
+    }
+    
+    .installment-table table {
+        font-size: 0.55rem;
+    }
+    
+    .installment-table th,
+    .installment-table td {
+        padding: 2px 1px;
+    }
+    
+    .installment-table th {
+        font-size: 0.5rem;
+        line-height: 1.0;
+    }
+    
+    .installment-table td {
+        font-size: 0.5rem;
+        line-height: 1.1;
+    }
+    
+    .currency {
+        font-size: 0.45rem;
+    }
+    
+    .year-header {
+        font-size: 0.6rem;
+        padding: 3px 2px;
+    }
+    
+    .year-total {
+        font-size: 0.5rem;
+        padding: 2px 1px;
+    }
+    
+    .comparison-header {
+        font-size: 0.5rem;
+        padding: 3px 2px;
+    }
+    
+    .savings-positive,
+    .savings-negative {
+        font-size: 0.45rem;
     }
 }
