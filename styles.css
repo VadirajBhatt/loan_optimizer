@@ -89,7 +89,8 @@ header p {
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
     padding: 12px 30px;
     border: none;
     border-radius: 8px;
@@ -111,7 +112,8 @@ header p {
     color: white;
 }
 
-.btn-primary:hover, .btn-secondary:hover {
+.btn-primary:hover,
+.btn-secondary:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
@@ -446,6 +448,100 @@ header p {
     border-left: 2px solid #dee2e6;
 }
 
+.advanced-scenarios {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.scenario-section {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.scenario-section h4 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.scenario-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.scenario-item input,
+.scenario-item select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.remove-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.remove-btn:hover {
+    background: #c82333;
+}
+
+.scenario-summary {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.scenario-summary h4 {
+    margin-bottom: 10px;
+}
+
+.event-timeline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.event-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.event-part-payment {
+    background: #ffc107;
+    color: #212529;
+}
+
+.event-rate-change {
+    background: #17a2b8;
+    color: white;
+}
+
+.event-emi-change {
+    background: #28a745;
+    color: white;
+}
+
 select {
     width: 100%;
     padding: 12px 15px;
@@ -510,35 +606,37 @@ select:focus {
     body {
         padding: 10px;
     }
-    
+
     .container {
         margin: 0;
         border-radius: 10px;
         max-width: 100%;
     }
-    
+
     header {
         padding: 20px 15px;
     }
-    
+
     header h1 {
         font-size: 1.6rem;
         line-height: 1.2;
     }
-    
+
     header p {
         font-size: 0.95rem;
     }
-    
-    .calculator-section, .results-section {
+
+    .calculator-section,
+    .results-section {
         padding: 15px;
     }
-    
-    .prepayment-section, .chart-section {
+
+    .prepayment-section,
+    .chart-section {
         padding: 15px;
         margin-top: 20px;
     }
-    
+
     .strategy-tabs {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -546,7 +644,7 @@ select:focus {
         border-radius: 0;
         box-shadow: none;
     }
-    
+
     .tab-btn {
         padding: 16px 8px;
         font-size: 0.85rem;
@@ -557,135 +655,137 @@ select:focus {
         line-height: 1.2;
         word-wrap: break-word;
     }
-    
+
     .tab-btn:nth-child(3),
     .tab-btn:nth-child(4) {
         margin-top: 4px;
     }
-    
+
     .result-grid {
         grid-template-columns: 1fr;
         gap: 10px;
     }
-    
+
     .result-item {
         padding: 12px;
     }
-    
+
     .result-item .value {
         font-size: 1.2rem;
     }
-    
+
     .savings-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
-    
+
     .savings-item {
         padding: 8px;
     }
-    
+
     .savings-item .value {
         font-size: 1rem;
     }
-    
+
     .closure-dates {
         grid-template-columns: 1fr;
         gap: 10px;
     }
-    
+
     .closure-date-item {
         padding: 12px;
     }
-    
+
     .chart-container {
         height: 280px;
         padding: 10px;
     }
-    
+
     .chart-container h3 {
         font-size: 1rem;
         margin-bottom: 10px;
     }
-    
+
     .loan-closure-info {
         padding: 15px;
     }
-    
+
     .loan-closure-info h3 {
         font-size: 1.1rem;
     }
-    
+
     .installment-section {
         padding: 15px;
         margin-top: 20px;
     }
-    
+
     .table-options {
         flex-direction: column;
         gap: 15px;
     }
-    
+
     .option-group {
         justify-content: center;
     }
-    
+
     .installment-table table {
         font-size: 0.6rem;
     }
-    
+
     .installment-table th,
     .installment-table td {
         padding: 3px 2px;
     }
-    
+
     .installment-table th {
         font-size: 0.55rem;
         line-height: 1.1;
     }
-    
+
     .installment-table td {
         font-size: 0.55rem;
         line-height: 1.2;
     }
-    
+
     .currency {
         font-size: 0.5rem;
     }
-    
+
     .input-group {
         margin-bottom: 15px;
     }
-    
+
     .input-group label {
         font-size: 0.95rem;
         margin-bottom: 6px;
     }
-    
-    .input-group input, select {
+
+    .input-group input,
+    select {
         padding: 14px 12px;
         font-size: 1rem;
     }
-    
-    .btn-primary, .btn-secondary {
+
+    .btn-primary,
+    .btn-secondary {
         padding: 14px 20px;
         font-size: 1rem;
         margin-top: 12px;
     }
-    
+
     .emi-result {
         padding: 20px 15px;
     }
-    
+
     .emi-result h2 {
         font-size: 1.3rem;
         margin-bottom: 15px;
     }
-    
+
     .savings-card {
         padding: 15px;
     }
-    
+
     .savings-card h3 {
         font-size: 1.1rem;
         margin-bottom: 12px;
@@ -696,102 +796,136 @@ select:focus {
     body {
         padding: 5px;
     }
-    
+
     header h1 {
         font-size: 1.4rem;
     }
-    
+
     header p {
         font-size: 0.9rem;
     }
-    
-    .calculator-section, .results-section, .prepayment-section, .chart-section {
+
+    .calculator-section,
+    .results-section,
+    .prepayment-section,
+    .chart-section {
         padding: 12px;
     }
-    
+
     .strategy-tabs {
         grid-template-columns: 1fr;
         gap: 6px;
     }
-    
+
     .tab-btn {
         padding: 14px 10px;
         font-size: 0.9rem;
         border-radius: 8px;
     }
-    
+
     .tab-btn:nth-child(3),
     .tab-btn:nth-child(4) {
         margin-top: 0;
     }
-    
+
     .savings-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .result-item .value {
         font-size: 1.1rem;
     }
-    
+
     .chart-container {
         height: 250px;
         padding: 8px;
     }
-    
-    .input-group input, select {
+
+    .input-group input,
+    select {
         padding: 12px 10px;
         font-size: 0.95rem;
     }
-    
-    .btn-primary, .btn-secondary {
+
+    .btn-primary,
+    .btn-secondary {
         padding: 12px 16px;
         font-size: 0.95rem;
     }
-    
+
     .installment-section {
         padding: 10px;
     }
-    
+
     .installment-table table {
         font-size: 0.55rem;
     }
-    
+
     .installment-table th,
     .installment-table td {
         padding: 2px 1px;
     }
-    
+
     .installment-table th {
         font-size: 0.5rem;
         line-height: 1.0;
     }
-    
+
     .installment-table td {
         font-size: 0.5rem;
         line-height: 1.1;
     }
-    
+
     .currency {
         font-size: 0.45rem;
     }
-    
+
     .year-header {
         font-size: 0.6rem;
         padding: 3px 2px;
     }
-    
+
     .year-total {
         font-size: 0.5rem;
         padding: 2px 1px;
     }
-    
+
     .comparison-header {
         font-size: 0.5rem;
         padding: 3px 2px;
     }
-    
+
     .savings-positive,
     .savings-negative {
         font-size: 0.45rem;
+    }
+
+    .advanced-scenarios {
+        padding: 15px;
+    }
+
+    .scenario-section {
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .scenario-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .scenario-item input,
+    .scenario-item select {
+        width: 100%;
+    }
+
+    .event-timeline {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .event-badge {
+        font-size: 0.7rem;
+        padding: 6px 10px;
     }
 }

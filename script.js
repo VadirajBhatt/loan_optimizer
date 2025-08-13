@@ -3,6 +3,11 @@ class EMICalculator {
         this.originalChart = null;
         this.comparisonChart = null;
         this.currentDate = new Date();
+        this.advancedEvents = {
+            partPayments: [],
+            rateChanges: [],
+            emiChanges: []
+        };
         this.initializeEventListeners();
     }
 
@@ -12,6 +17,13 @@ class EMICalculator {
         document.getElementById('calculate-custom-emi').addEventListener('click', () => this.calculateCustomEMI());
         document.getElementById('calculate-part-payment').addEventListener('click', () => this.calculatePartPayment());
         document.getElementById('calculate-rate-change').addEventListener('click', () => this.calculateRateChange());
+        
+        // Advanced scenarios
+        document.getElementById('add-part-payment').addEventListener('click', () => this.addPartPaymentEvent());
+        document.getElementById('add-rate-change').addEventListener('click', () => this.addRateChangeEvent());
+        document.getElementById('add-emi-change').addEventListener('click', () => this.addEmiChangeEvent());
+        document.getElementById('calculate-advanced-scenario').addEventListener('click', () => this.calculateAdvancedScenario());
+        document.getElementById('clear-all-events').addEventListener('click', () => this.clearAllEvents());
 
         // Tab switching
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -67,6 +79,13 @@ class EMICalculator {
         this.generateOriginalChart(principal, monthlyRate, emi, tenureMonths);
         this.displayLoanClosureInfo(tenureMonths);
         this.generateInstallmentTable('original', principal, monthlyRate, emi, tenureMonths);
+        
+        // Reset comparison data and hide comparison chart
+        this.hasComparison = false;
+        this.comparisonTableData = null;
+        document.getElementById('comparison-chart-container').style.display = 'none';
+        document.querySelector('.charts-grid').classList.remove('comparison');
+        
         document.getElementById('results').style.display = 'block';
         document.getElementById('installment-section').style.display = 'block';
     }
@@ -197,11 +216,26 @@ class EMICalculator {
             const interestSavings = (originalEMI * tenureMonths) - (increasedEMI * newTenureMonths);
             const timeSavings = (tenureMonths - newTenureMonths) / 12;
 
+            const monthlyIncrease = increasedEMI - originalEMI;
+            const totalSavings = interestSavings;
+            const roi = ((totalSavings / (monthlyIncrease * newTenureMonths)) * 100);
+            
             scenarioHTML += `
                 <div style="background: #e8f4f8; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid #3498db;">
-                    <strong>${percent}% EMI Increase:</strong> 
-                    Save ${this.formatCurrency(interestSavings)} in interest, 
-                    Complete loan ${timeSavings.toFixed(1)} years earlier
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 8px;">
+                        <div>
+                            <strong>${percent}% EMI Increase</strong><br>
+                            <small>Monthly: +${this.formatCurrency(monthlyIncrease)}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <strong>Time Saved: ${timeSavings.toFixed(1)} years</strong><br>
+                            <small>Interest Saved: ${this.formatCurrency(interestSavings)}</small>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.3); padding: 8px; border-radius: 4px; font-size: 0.9rem;">
+                        <strong>Analysis:</strong> Extra ${this.formatCurrency(monthlyIncrease)}/month saves ${this.formatCurrency(interestSavings)} 
+                        (ROI: ${roi.toFixed(1)}% on additional payments)
+                    </div>
                 </div>
             `;
         });
@@ -225,6 +259,19 @@ class EMICalculator {
 
         // Clear previous results
         document.getElementById('prepayment-results').innerHTML = '';
+        
+        // Reset comparison data when switching tabs
+        if (tabName !== 'advanced') {
+            this.hasComparison = false;
+            this.comparisonTableData = null;
+            document.getElementById('comparison-chart-container').style.display = 'none';
+            document.querySelector('.charts-grid').classList.remove('comparison');
+            
+            // Regenerate original table to remove highlights
+            if (this.originalTableData) {
+                this.displayCombinedInstallmentTable();
+            }
+        }
     }
 
     calculateCustomEMI() {
@@ -1359,17 +1406,46 @@ class EMICalculator {
             // Check for special events (part payment, rate change)
             let partPayment = 0;
             let isRateChange = false;
+            let isEmiChange = false;
             
             if (specialEvents) {
-                if (specialEvents.partPayment && month === specialEvents.partPaymentMonth) {
-                    partPayment = specialEvents.partPaymentAmount;
-                }
-                if (specialEvents.rateChange && month === specialEvents.rateChangeMonth) {
-                    currentRate = specialEvents.newRate / (12 * 100);
-                    isRateChange = true;
-                }
-                if (specialEvents.emiChange && month >= specialEvents.emiChangeMonth) {
-                    currentEMI = specialEvents.newEMI;
+                if (specialEvents.multipleEvents) {
+                    // Handle multiple events
+                    const monthEvents = specialEvents.events.filter(event => event.month === month);
+                    
+                    // Process events in order: part payments first, then rate changes, then EMI changes
+                    monthEvents.forEach(event => {
+                        if (event.type === 'partPayment') {
+                            partPayment += event.amount;
+                        }
+                    });
+                    
+                    monthEvents.forEach(event => {
+                        if (event.type === 'rateChange') {
+                            currentRate = event.newRate / (12 * 100);
+                            isRateChange = true;
+                        }
+                    });
+                    
+                    monthEvents.forEach(event => {
+                        if (event.type === 'emiChange') {
+                            currentEMI = event.newEMI;
+                            isEmiChange = true;
+                        }
+                    });
+                } else {
+                    // Handle single events (backward compatibility)
+                    if (specialEvents.partPayment && month === specialEvents.partPaymentMonth) {
+                        partPayment = specialEvents.partPaymentAmount;
+                    }
+                    if (specialEvents.rateChange && month === specialEvents.rateChangeMonth) {
+                        currentRate = specialEvents.newRate / (12 * 100);
+                        isRateChange = true;
+                    }
+                    if (specialEvents.emiChange && month >= specialEvents.emiChangeMonth) {
+                        currentEMI = specialEvents.newEMI;
+                        isEmiChange = true;
+                    }
                 }
             }
             
@@ -1395,6 +1471,7 @@ class EMICalculator {
                 partPayment,
                 outstandingBalance,
                 isRateChange,
+                isEmiChange,
                 currentRate: currentRate * 12 * 100
             });
             
@@ -1509,8 +1586,14 @@ class EMICalculator {
                 yearlyComparisonInterest += comparisonRow.interest;
             }
             
-            const rowClass = originalRow.partPayment > 0 || (comparisonRow && comparisonRow.partPayment > 0) ? 'part-payment-row' : 
-                           originalRow.isRateChange || (comparisonRow && comparisonRow.isRateChange) ? 'rate-change-row' : '';
+            let rowClass = '';
+            if (originalRow.partPayment > 0 || (comparisonRow && comparisonRow.partPayment > 0)) {
+                rowClass = 'part-payment-row';
+            } else if (originalRow.isRateChange || (comparisonRow && comparisonRow.isRateChange)) {
+                rowClass = 'rate-change-row';
+            } else if (originalRow.isEmiChange || (comparisonRow && comparisonRow.isEmiChange)) {
+                rowClass = 'rate-change-row'; // Use same styling as rate change
+            }
             
             // Calculate differences
             const interestDiff = comparisonRow ? originalRow.interest - comparisonRow.interest : 0;
@@ -1576,6 +1659,423 @@ class EMICalculator {
         document.getElementById('installment-table').innerHTML = tableHTML;
     }
 
+    addPartPaymentEvent() {
+        const id = Date.now();
+        this.advancedEvents.partPayments.push({
+            id,
+            month: 12,
+            amount: 100000
+        });
+        this.renderPartPayments();
+    }
+
+    addRateChangeEvent() {
+        const id = Date.now();
+        this.advancedEvents.rateChanges.push({
+            id,
+            month: 12,
+            newRate: 7.5
+        });
+        this.renderRateChanges();
+    }
+
+    addEmiChangeEvent() {
+        const id = Date.now();
+        const currentEMI = this.getCurrentEMI();
+        this.advancedEvents.emiChanges.push({
+            id,
+            month: 12,
+            newEMI: Math.round(currentEMI * 1.1)
+        });
+        this.renderEmiChanges();
+    }
+
+    getCurrentEMI() {
+        const principal = this.getPrincipalValue();
+        const annualRate = parseFloat(document.getElementById('rate').value);
+        const tenureYears = parseFloat(document.getElementById('tenure').value);
+        
+        if (!principal || !annualRate || !tenureYears) return 50000;
+        
+        const monthlyRate = annualRate / (12 * 100);
+        const tenureMonths = tenureYears * 12;
+        
+        return (principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) /
+               (Math.pow(1 + monthlyRate, tenureMonths) - 1);
+    }
+
+    renderPartPayments() {
+        const container = document.getElementById('part-payments-list');
+        container.innerHTML = this.advancedEvents.partPayments.map(event => `
+            <div class="scenario-item">
+                <input type="number" value="${event.month}" min="1" max="240" 
+                       onchange="calculator.updatePartPayment(${event.id}, 'month', this.value)"
+                       placeholder="Month">
+                <input type="number" value="${event.amount}" min="1000" step="1000"
+                       onchange="calculator.updatePartPayment(${event.id}, 'amount', this.value)"
+                       placeholder="Amount (₹)">
+                <span>Month ${event.month}: ${this.formatCurrency(event.amount)}</span>
+                <button class="remove-btn" onclick="calculator.removePartPayment(${event.id})">Remove</button>
+            </div>
+        `).join('');
+    }
+
+    renderRateChanges() {
+        const container = document.getElementById('rate-changes-list');
+        container.innerHTML = this.advancedEvents.rateChanges.map(event => `
+            <div class="scenario-item">
+                <input type="number" value="${event.month}" min="1" max="240"
+                       onchange="calculator.updateRateChange(${event.id}, 'month', this.value)"
+                       placeholder="Month">
+                <input type="number" value="${event.newRate}" min="0.01" max="50" step="0.01"
+                       onchange="calculator.updateRateChange(${event.id}, 'newRate', this.value)"
+                       placeholder="New Rate (%)">
+                <span>Month ${event.month}: ${event.newRate}%</span>
+                <button class="remove-btn" onclick="calculator.removeRateChange(${event.id})">Remove</button>
+            </div>
+        `).join('');
+    }
+
+    renderEmiChanges() {
+        const container = document.getElementById('emi-changes-list');
+        container.innerHTML = this.advancedEvents.emiChanges.map(event => `
+            <div class="scenario-item">
+                <input type="number" value="${event.month}" min="1" max="240"
+                       onchange="calculator.updateEmiChange(${event.id}, 'month', this.value)"
+                       placeholder="Month">
+                <input type="number" value="${event.newEMI}" min="1000" step="100"
+                       onchange="calculator.updateEmiChange(${event.id}, 'newEMI', this.value)"
+                       placeholder="New EMI (₹)">
+                <span>Month ${event.month}: ${this.formatCurrency(event.newEMI)}</span>
+                <button class="remove-btn" onclick="calculator.removeEmiChange(${event.id})">Remove</button>
+            </div>
+        `).join('');
+    }
+
+    updatePartPayment(id, field, value) {
+        const event = this.advancedEvents.partPayments.find(e => e.id === id);
+        if (event) {
+            event[field] = parseFloat(value);
+            this.renderPartPayments();
+        }
+    }
+
+    updateRateChange(id, field, value) {
+        const event = this.advancedEvents.rateChanges.find(e => e.id === id);
+        if (event) {
+            event[field] = parseFloat(value);
+            this.renderRateChanges();
+        }
+    }
+
+    updateEmiChange(id, field, value) {
+        const event = this.advancedEvents.emiChanges.find(e => e.id === id);
+        if (event) {
+            event[field] = parseFloat(value);
+            this.renderEmiChanges();
+        }
+    }
+
+    removePartPayment(id) {
+        this.advancedEvents.partPayments = this.advancedEvents.partPayments.filter(e => e.id !== id);
+        this.renderPartPayments();
+    }
+
+    removeRateChange(id) {
+        this.advancedEvents.rateChanges = this.advancedEvents.rateChanges.filter(e => e.id !== id);
+        this.renderRateChanges();
+    }
+
+    removeEmiChange(id) {
+        this.advancedEvents.emiChanges = this.advancedEvents.emiChanges.filter(e => e.id !== id);
+        this.renderEmiChanges();
+    }
+
+    clearAllEvents() {
+        this.advancedEvents = {
+            partPayments: [],
+            rateChanges: [],
+            emiChanges: []
+        };
+        this.renderPartPayments();
+        this.renderRateChanges();
+        this.renderEmiChanges();
+        document.getElementById('prepayment-results').innerHTML = '';
+    }
+
+    calculateAdvancedScenario() {
+        const principal = this.getPrincipalValue();
+        const annualRate = parseFloat(document.getElementById('rate').value);
+        const tenureYears = parseFloat(document.getElementById('tenure').value);
+
+        if (!principal || !annualRate || !tenureYears) {
+            alert('Please fill in basic loan details first');
+            return;
+        }
+
+        // Combine all events and sort by month
+        const allEvents = [
+            ...this.advancedEvents.partPayments.map(e => ({...e, type: 'partPayment'})),
+            ...this.advancedEvents.rateChanges.map(e => ({...e, type: 'rateChange'})),
+            ...this.advancedEvents.emiChanges.map(e => ({...e, type: 'emiChange'}))
+        ].sort((a, b) => a.month - b.month);
+
+        const monthlyRate = annualRate / (12 * 100);
+        const tenureMonths = tenureYears * 12;
+
+        // Calculate original scenario
+        const originalEMI = (principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) /
+                           (Math.pow(1 + monthlyRate, tenureMonths) - 1);
+        const originalTotalAmount = originalEMI * tenureMonths;
+        const originalInterest = originalTotalAmount - principal;
+
+        // Calculate advanced scenario
+        const advancedResult = this.calculateAdvancedSchedule(principal, monthlyRate, originalEMI, tenureMonths, allEvents);
+
+        this.displayAdvancedResults({
+            originalEMI,
+            originalInterest,
+            originalTotalAmount,
+            originalTenure: tenureYears,
+            advancedResult,
+            events: allEvents
+        });
+    }
+
+    calculateAdvancedSchedule(principal, monthlyRate, initialEMI, maxTenure, events) {
+        let outstandingBalance = principal;
+        let currentEMI = initialEMI;
+        let currentRate = monthlyRate;
+        let totalPaid = 0;
+        let totalInterest = 0;
+        let totalPartPayments = 0;
+        let month = 1;
+
+        const eventsByMonth = {};
+        events.forEach(event => {
+            if (!eventsByMonth[event.month]) eventsByMonth[event.month] = [];
+            eventsByMonth[event.month].push(event);
+        });
+
+        while (outstandingBalance > 1 && month <= maxTenure) {
+            // Apply events for this month
+            if (eventsByMonth[month]) {
+                eventsByMonth[month].forEach(event => {
+                    if (event.type === 'partPayment') {
+                        outstandingBalance = Math.max(0, outstandingBalance - event.amount);
+                        totalPartPayments += event.amount;
+                    } else if (event.type === 'rateChange') {
+                        currentRate = event.newRate / (12 * 100);
+                    } else if (event.type === 'emiChange') {
+                        currentEMI = event.newEMI;
+                    }
+                });
+            }
+
+            if (outstandingBalance <= 1) break;
+
+            const interestComponent = outstandingBalance * currentRate;
+            const principalComponent = Math.max(0, Math.min(currentEMI - interestComponent, outstandingBalance));
+            
+            outstandingBalance = Math.max(0, outstandingBalance - principalComponent);
+            totalPaid += currentEMI;
+            totalInterest += interestComponent;
+            
+            month++;
+        }
+
+        return {
+            actualTenure: month - 1,
+            totalPaid,
+            totalInterest,
+            totalPartPayments,
+            finalBalance: outstandingBalance
+        };
+    }
+
+    displayAdvancedResults(data) {
+        const resultsContainer = document.getElementById('prepayment-results');
+        
+        const timeSaved = data.originalTenure - (data.advancedResult.actualTenure / 12);
+        const interestSaved = data.originalInterest - data.advancedResult.totalInterest;
+        const totalSaved = interestSaved;
+
+        resultsContainer.innerHTML = `
+            <div class="scenario-summary">
+                <h4>Advanced Scenario Results</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div>
+                        <strong>Original Scenario</strong><br>
+                        Tenure: ${data.originalTenure} years<br>
+                        Total Interest: ${this.formatCurrency(data.originalInterest)}
+                    </div>
+                    <div>
+                        <strong>Advanced Scenario</strong><br>
+                        Tenure: ${(data.advancedResult.actualTenure / 12).toFixed(1)} years<br>
+                        Total Interest: ${this.formatCurrency(data.advancedResult.totalInterest)}
+                    </div>
+                    <div>
+                        <strong>Savings</strong><br>
+                        Time Saved: ${timeSaved.toFixed(1)} years<br>
+                        Interest Saved: ${this.formatCurrency(interestSaved)}
+                    </div>
+                </div>
+                
+                <div class="event-timeline">
+                    ${data.events.map(event => {
+                        if (event.type === 'partPayment') {
+                            return `<span class="event-badge event-part-payment">Month ${event.month}: Part Payment ${this.formatCurrency(event.amount)}</span>`;
+                        } else if (event.type === 'rateChange') {
+                            return `<span class="event-badge event-rate-change">Month ${event.month}: Rate ${event.newRate}%</span>`;
+                        } else if (event.type === 'emiChange') {
+                            return `<span class="event-badge event-emi-change">Month ${event.month}: EMI ${this.formatCurrency(event.newEMI)}</span>`;
+                        }
+                    }).join('')}
+                </div>
+            </div>
+        `;
+
+        // Generate advanced comparison chart and table
+        this.generateAdvancedComparisonChart(data);
+    }
+
+    generateAdvancedComparisonChart(data) {
+        const principal = this.getPrincipalValue();
+        const annualRate = parseFloat(document.getElementById('rate').value);
+        const monthlyRate = annualRate / (12 * 100);
+        
+        // Combine all events for the detailed schedule
+        const allEvents = [
+            ...this.advancedEvents.partPayments.map(e => ({...e, type: 'partPayment'})),
+            ...this.advancedEvents.rateChanges.map(e => ({...e, type: 'rateChange'})),
+            ...this.advancedEvents.emiChanges.map(e => ({...e, type: 'emiChange'}))
+        ].sort((a, b) => a.month - b.month);
+
+        const specialEvents = {
+            multipleEvents: true,
+            events: allEvents
+        };
+
+        const newTenureMonths = data.advancedResult.actualTenure;
+        
+        // Generate the advanced chart data
+        const chartData = this.calculateAdvancedAmortizationSchedule(principal, monthlyRate, data.originalEMI, newTenureMonths, allEvents);
+        
+        // Create the comparison chart
+        if (this.comparisonChart) {
+            this.comparisonChart.destroy();
+        }
+
+        const ctx = document.getElementById('comparisonChart').getContext('2d');
+
+        this.comparisonChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.dateLabels,
+                datasets: [
+                    {
+                        label: 'Principal Component',
+                        data: chartData.principalComponents,
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Interest Component',
+                        data: chartData.interestComponents,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Outstanding Balance',
+                        data: chartData.outstandingBalances,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        fill: false,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: this.getChartOptions()
+        });
+
+        // Generate the installment table
+        this.generateInstallmentTable('comparison', principal, monthlyRate, data.originalEMI, newTenureMonths, specialEvents);
+
+        // Show comparison chart
+        document.getElementById('comparison-chart-container').style.display = 'block';
+        document.querySelector('.charts-grid').classList.add('comparison');
+        
+        // Update loan closure info
+        const originalTenure = parseFloat(document.getElementById('tenure').value) * 12;
+        this.displayLoanClosureInfo(originalTenure, newTenureMonths);
+    }
+
+    calculateAdvancedAmortizationSchedule(principal, monthlyRate, initialEMI, maxTenure, events) {
+        const dateLabels = [];
+        const principalComponents = [];
+        const interestComponents = [];
+        const outstandingBalances = [];
+        
+        let outstandingBalance = principal;
+        let currentEMI = initialEMI;
+        let currentRate = monthlyRate;
+        const startDate = this.getLoanStartDate();
+        
+        // Create events lookup by month
+        const eventsByMonth = {};
+        events.forEach(event => {
+            if (!eventsByMonth[event.month]) eventsByMonth[event.month] = [];
+            eventsByMonth[event.month].push(event);
+        });
+        
+        // Sample every few months for better chart readability
+        const sampleInterval = Math.max(1, Math.floor(maxTenure / 15));
+        
+        for (let month = 1; month <= maxTenure && outstandingBalance > 1; month++) {
+            const installmentDate = this.getInstallmentDate(startDate, month);
+            
+            // Apply events for this month
+            if (eventsByMonth[month]) {
+                eventsByMonth[month].forEach(event => {
+                    if (event.type === 'partPayment') {
+                        outstandingBalance = Math.max(0, outstandingBalance - event.amount);
+                    } else if (event.type === 'rateChange') {
+                        currentRate = event.newRate / (12 * 100);
+                    } else if (event.type === 'emiChange') {
+                        currentEMI = event.newEMI;
+                    }
+                });
+            }
+            
+            if (outstandingBalance <= 1) break;
+            
+            const interestComponent = outstandingBalance * currentRate;
+            const principalComponent = Math.max(0, Math.min(currentEMI - interestComponent, outstandingBalance));
+            outstandingBalance = Math.max(0, outstandingBalance - principalComponent);
+            
+            if (month % sampleInterval === 0 || month === 1 || month === maxTenure || eventsByMonth[month] || outstandingBalance <= 1) {
+                dateLabels.push(this.getDateLabel(month));
+                principalComponents.push(Math.round(principalComponent));
+                interestComponents.push(Math.round(interestComponent));
+                outstandingBalances.push(Math.round(outstandingBalance));
+            }
+            
+            if (outstandingBalance <= 1) break;
+        }
+        
+        return {
+            dateLabels,
+            principalComponents,
+            interestComponents,
+            outstandingBalances
+        };
+    }
+
     formatCurrency(amount) {
         return new Intl.NumberFormat('en-IN', {
             style: 'currency',
@@ -1586,6 +2086,7 @@ class EMICalculator {
 }
 
 // Initialize the calculator when the page loads
+let calculator;
 document.addEventListener('DOMContentLoaded', () => {
-    new EMICalculator();
+    calculator = new EMICalculator();
 });

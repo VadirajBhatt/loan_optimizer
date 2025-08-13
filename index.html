@@ -67,6 +67,7 @@
                     <button class="tab-btn" data-tab="amount">By EMI Amount</button>
                     <button class="tab-btn" data-tab="partpayment">Part Payment</button>
                     <button class="tab-btn" data-tab="ratechange">Rate Change</button>
+                    <button class="tab-btn" data-tab="advanced">Advanced Scenarios</button>
                 </div>
 
                 <div id="percentage-tab" class="tab-content active">
@@ -125,6 +126,34 @@
                         </select>
                     </div>
                     <button id="calculate-rate-change" class="btn-secondary">Calculate Impact</button>
+                </div>
+
+                <div id="advanced-tab" class="tab-content">
+                    <div class="advanced-scenarios">
+                        <h3>Multiple Events Scenario</h3>
+                        <p style="margin-bottom: 15px; color: #666;">Plan multiple part payments, rate changes, and EMI increases throughout your loan tenure.</p>
+                        
+                        <div class="scenario-section">
+                            <h4>Part Payments</h4>
+                            <div id="part-payments-list"></div>
+                            <button id="add-part-payment" class="btn-secondary" style="margin-bottom: 15px;">Add Part Payment</button>
+                        </div>
+
+                        <div class="scenario-section">
+                            <h4>Rate Changes</h4>
+                            <div id="rate-changes-list"></div>
+                            <button id="add-rate-change" class="btn-secondary" style="margin-bottom: 15px;">Add Rate Change</button>
+                        </div>
+
+                        <div class="scenario-section">
+                            <h4>EMI Changes</h4>
+                            <div id="emi-changes-list"></div>
+                            <button id="add-emi-change" class="btn-secondary" style="margin-bottom: 15px;">Add EMI Change</button>
+                        </div>
+
+                        <button id="calculate-advanced-scenario" class="btn-primary">Calculate Advanced Scenario</button>
+                        <button id="clear-all-events" class="btn-secondary" style="margin-left: 10px;">Clear All</button>
+                    </div>
                 </div>
 
                 <div id="prepayment-results" class="prepayment-results"></div>
