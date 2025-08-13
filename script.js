@@ -12,23 +12,24 @@ class EMICalculator {
     }
 
     initializeEventListeners() {
+        // Initialize theme
+        this.initializeTheme();
+        
         document.getElementById('calculate').addEventListener('click', () => this.calculateEMI());
-        document.getElementById('calculate-prepayment').addEventListener('click', () => this.calculatePrepayment());
-        document.getElementById('calculate-custom-emi').addEventListener('click', () => this.calculateCustomEMI());
-        document.getElementById('calculate-part-payment').addEventListener('click', () => this.calculatePartPayment());
-        document.getElementById('calculate-rate-change').addEventListener('click', () => this.calculateRateChange());
+
         
         // Advanced scenarios
         document.getElementById('add-part-payment').addEventListener('click', () => this.addPartPaymentEvent());
         document.getElementById('add-rate-change').addEventListener('click', () => this.addRateChangeEvent());
         document.getElementById('add-emi-change').addEventListener('click', () => this.addEmiChangeEvent());
+        document.getElementById('add-gradual-increase').addEventListener('click', () => this.addGradualIncrease());
         document.getElementById('calculate-advanced-scenario').addEventListener('click', () => this.calculateAdvancedScenario());
         document.getElementById('clear-all-events').addEventListener('click', () => this.clearAllEvents());
+        
+        // Set default gradual increase start date
+        this.setDefaultGradualStartDate();
 
-        // Tab switching
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
-        });
+
 
         // Set default loan start date to today
         this.setDefaultLoanStartDate();
@@ -53,6 +54,8 @@ class EMICalculator {
         document.getElementById('show-years').addEventListener('change', () => {
             this.updateTableDisplay();
         });
+        
+
     }
 
     calculateEMI() {
@@ -79,6 +82,18 @@ class EMICalculator {
         this.generateOriginalChart(principal, monthlyRate, emi, tenureMonths);
         this.displayLoanClosureInfo(tenureMonths);
         this.generateInstallmentTable('original', principal, monthlyRate, emi, tenureMonths);
+        
+        // Show the loan amortization section for regular calculations
+        document.querySelector('.chart-section h2').style.display = 'block';
+        document.getElementById('loan-closure-info').style.display = 'block';
+        
+        // Hide optimized strategy results when calculating regular EMI
+        const prepaymentResults = document.getElementById('prepayment-results');
+        if (prepaymentResults) {
+            prepaymentResults.innerHTML = '';
+        }
+        
+
         
         // Reset comparison data and hide comparison chart
         this.hasComparison = false;
@@ -244,35 +259,7 @@ class EMICalculator {
         document.getElementById('prepayment-results').innerHTML += scenarioHTML;
     }
 
-    switchTab(tabName) {
-        // Update tab buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
 
-        // Update tab content
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        document.getElementById(`${tabName}-tab`).classList.add('active');
-
-        // Clear previous results
-        document.getElementById('prepayment-results').innerHTML = '';
-        
-        // Reset comparison data when switching tabs
-        if (tabName !== 'advanced') {
-            this.hasComparison = false;
-            this.comparisonTableData = null;
-            document.getElementById('comparison-chart-container').style.display = 'none';
-            document.querySelector('.charts-grid').classList.remove('comparison');
-            
-            // Regenerate original table to remove highlights
-            if (this.originalTableData) {
-                this.displayCombinedInstallmentTable();
-            }
-        }
-    }
 
     calculateCustomEMI() {
         const principal = this.getPrincipalValue();
@@ -1117,6 +1104,11 @@ class EMICalculator {
     }
 
     getChartOptions() {
+        const theme = document.documentElement.getAttribute('data-theme');
+        const isDark = theme === 'dark';
+        const textColor = isDark ? '#e2e8f0' : '#2c3e50';
+        const gridColor = isDark ? '#4a5568' : '#e9ecef';
+        
         return {
             responsive: true,
             maintainAspectRatio: false,
@@ -1127,6 +1119,21 @@ class EMICalculator {
             plugins: {
                 legend: {
                     position: 'top',
+                    labels: {
+                        color: textColor,
+                        font: {
+                            size: 12,
+                            weight: '600'
+                        },
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    backgroundColor: isDark ? '#2d3748' : 'rgba(0,0,0,0.8)',
+                    titleColor: textColor,
+                    bodyColor: textColor,
+                    borderColor: isDark ? '#4a5568' : '#ccc',
+                    borderWidth: 1
                 }
             },
             scales: {
@@ -1134,11 +1141,23 @@ class EMICalculator {
                     display: true,
                     title: {
                         display: true,
-                        text: 'Timeline'
+                        text: 'Timeline',
+                        color: textColor,
+                        font: {
+                            size: 12,
+                            weight: '600'
+                        }
                     },
                     ticks: {
                         maxRotation: 45,
-                        minRotation: 45
+                        minRotation: 45,
+                        color: textColor,
+                        font: {
+                            size: 10
+                        }
+                    },
+                    grid: {
+                        color: gridColor
                     }
                 },
                 y: {
@@ -1147,12 +1166,24 @@ class EMICalculator {
                     position: 'left',
                     title: {
                         display: true,
-                        text: 'EMI Components (₹)'
+                        text: 'EMI Components (₹)',
+                        color: textColor,
+                        font: {
+                            size: 12,
+                            weight: '600'
+                        }
                     },
                     ticks: {
+                        color: textColor,
+                        font: {
+                            size: 10
+                        },
                         callback: function (value) {
                             return '₹' + (value / 1000).toFixed(0) + 'K';
                         }
+                    },
+                    grid: {
+                        color: gridColor
                     }
                 },
                 y1: {
@@ -1161,12 +1192,22 @@ class EMICalculator {
                     position: 'right',
                     title: {
                         display: true,
-                        text: 'Outstanding Balance (₹)'
+                        text: 'Outstanding Balance (₹)',
+                        color: textColor,
+                        font: {
+                            size: 12,
+                            weight: '600'
+                        }
                     },
                     grid: {
                         drawOnChartArea: false,
+                        color: gridColor
                     },
                     ticks: {
+                        color: textColor,
+                        font: {
+                            size: 10
+                        },
                         callback: function (value) {
                             return '₹' + (value / 100000).toFixed(1) + 'L';
                         }
@@ -1355,6 +1396,119 @@ class EMICalculator {
         return parseFloat(value) || 0;
     }
 
+    convertAmountToWords(amount) {
+        if (amount >= 10000000) { // 1 crore or more
+            const crores = (amount / 10000000).toFixed(1);
+            return `${crores} crore${crores != 1 ? 's' : ''}`;
+        } else if (amount >= 100000) { // 1 lakh or more
+            const lakhs = (amount / 100000).toFixed(1);
+            return `${lakhs} lakh${lakhs != 1 ? 's' : ''}`;
+        } else if (amount >= 1000) { // 1 thousand or more
+            const thousands = (amount / 1000).toFixed(0);
+            return `${thousands} thousand`;
+        } else {
+            return `${Math.round(amount)}`;
+        }
+    }
+
+    getTimeSavedInWords(monthsSaved) {
+        const yearsSaved = Math.floor(monthsSaved / 12);
+        const remainingMonths = monthsSaved % 12;
+        
+        let timeSavedText = '';
+        if (yearsSaved > 0) {
+            timeSavedText = `${yearsSaved} year${yearsSaved > 1 ? 's' : ''}`;
+            if (remainingMonths > 0) {
+                timeSavedText += ` and ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}`;
+            }
+        } else {
+            timeSavedText = `${remainingMonths} month${remainingMonths > 1 ? 's' : ''}`;
+        }
+        return timeSavedText;
+    }
+
+
+
+    initializeTheme() {
+        // Load saved theme or default to dark
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        // Add theme toggle event listener
+        document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
+        
+        // Update button text
+        this.updateThemeButton();
+    }
+
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        this.updateThemeButton();
+        
+        // Save theme preference
+        localStorage.setItem('theme', newTheme);
+        
+        // Update charts if they exist
+        setTimeout(() => {
+            if (this.originalChart) {
+                this.updateChartTheme(this.originalChart);
+            }
+            if (this.comparisonChart) {
+                this.updateChartTheme(this.comparisonChart);
+            }
+        }, 100);
+    }
+
+    updateThemeButton() {
+        const theme = document.documentElement.getAttribute('data-theme');
+        const button = document.getElementById('theme-toggle');
+        
+        if (theme === 'dark') {
+            button.innerHTML = '☀️ Light';
+        } else {
+            button.innerHTML = '🌙 Dark';
+        }
+    }
+
+    updateChartTheme(chart) {
+        const theme = document.documentElement.getAttribute('data-theme');
+        const isDark = theme === 'dark';
+        
+        // Update legend
+        if (chart.options.plugins && chart.options.plugins.legend) {
+            chart.options.plugins.legend.labels.color = isDark ? '#e2e8f0' : '#2c3e50';
+        }
+        
+        // Update scales
+        if (chart.options.scales) {
+            Object.keys(chart.options.scales).forEach(scaleKey => {
+                const scale = chart.options.scales[scaleKey];
+                if (scale.ticks) {
+                    scale.ticks.color = isDark ? '#e2e8f0' : '#2c3e50';
+                }
+                if (scale.grid) {
+                    scale.grid.color = isDark ? '#4a5568' : '#e9ecef';
+                }
+                if (scale.title) {
+                    scale.title.color = isDark ? '#e2e8f0' : '#2c3e50';
+                }
+            });
+        }
+        
+        // Update tooltip styles
+        if (chart.options.plugins && chart.options.plugins.tooltip) {
+            chart.options.plugins.tooltip.backgroundColor = isDark ? '#2d3748' : 'rgba(0,0,0,0.8)';
+            chart.options.plugins.tooltip.titleColor = isDark ? '#e2e8f0' : '#fff';
+            chart.options.plugins.tooltip.bodyColor = isDark ? '#e2e8f0' : '#fff';
+            chart.options.plugins.tooltip.borderColor = isDark ? '#4a5568' : '#ccc';
+        }
+        
+        chart.update('none');
+    }
+
     updateTableDisplay() {
         // Regenerate table with new filters
         if (this.originalTableData) {
@@ -1383,6 +1537,43 @@ class EMICalculator {
         const day = String(today.getDate()).padStart(2, '0');
         const defaultDate = `${year}-${month}-${day}`;
         document.getElementById('loan-start-date').value = defaultDate;
+    }
+
+    setDefaultGradualStartDate() {
+        const loanStart = this.getLoanStartDate();
+        const gradualStart = new Date(loanStart);
+        gradualStart.setFullYear(gradualStart.getFullYear() + 1); // Start gradual increase after 1 year
+        
+        const year = gradualStart.getFullYear();
+        const month = String(gradualStart.getMonth() + 1).padStart(2, '0');
+        const day = String(gradualStart.getDate()).padStart(2, '0');
+        const defaultDate = `${year}-${month}-${day}`;
+        document.getElementById('gradual-start-date').value = defaultDate;
+    }
+
+    getDefaultEventDate(monthsFromStart) {
+        const loanStart = this.getLoanStartDate();
+        const eventDate = new Date(loanStart);
+        eventDate.setMonth(eventDate.getMonth() + monthsFromStart);
+        
+        const year = eventDate.getFullYear();
+        const month = String(eventDate.getMonth() + 1).padStart(2, '0');
+        const day = String(eventDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    dateToMonthNumber(dateString) {
+        const eventDate = new Date(dateString);
+        const loanStart = this.getLoanStartDate();
+        
+        const yearDiff = eventDate.getFullYear() - loanStart.getFullYear();
+        const monthDiff = eventDate.getMonth() - loanStart.getMonth();
+        const dayDiff = eventDate.getDate() - loanStart.getDate();
+        
+        let totalMonths = yearDiff * 12 + monthDiff;
+        if (dayDiff >= 0) totalMonths += 1; // Round up if event is on or after loan start day
+        
+        return Math.max(1, totalMonths);
     }
 
     getLoanStartDate() {
@@ -1661,9 +1852,10 @@ class EMICalculator {
 
     addPartPaymentEvent() {
         const id = Date.now();
+        const defaultDate = this.getDefaultEventDate(12); // 12 months from loan start
         this.advancedEvents.partPayments.push({
             id,
-            month: 12,
+            date: defaultDate,
             amount: 100000
         });
         this.renderPartPayments();
@@ -1671,9 +1863,10 @@ class EMICalculator {
 
     addRateChangeEvent() {
         const id = Date.now();
+        const defaultDate = this.getDefaultEventDate(12);
         this.advancedEvents.rateChanges.push({
             id,
-            month: 12,
+            date: defaultDate,
             newRate: 7.5
         });
         this.renderRateChanges();
@@ -1682,9 +1875,10 @@ class EMICalculator {
     addEmiChangeEvent() {
         const id = Date.now();
         const currentEMI = this.getCurrentEMI();
+        const defaultDate = this.getDefaultEventDate(12);
         this.advancedEvents.emiChanges.push({
             id,
-            month: 12,
+            date: defaultDate,
             newEMI: Math.round(currentEMI * 1.1)
         });
         this.renderEmiChanges();
@@ -1708,13 +1902,13 @@ class EMICalculator {
         const container = document.getElementById('part-payments-list');
         container.innerHTML = this.advancedEvents.partPayments.map(event => `
             <div class="scenario-item">
-                <input type="number" value="${event.month}" min="1" max="240" 
-                       onchange="calculator.updatePartPayment(${event.id}, 'month', this.value)"
-                       placeholder="Month">
+                <input type="date" value="${event.date}" 
+                       onchange="calculator.updatePartPayment(${event.id}, 'date', this.value)"
+                       style="width: 100%;">
                 <input type="number" value="${event.amount}" min="1000" step="1000"
                        onchange="calculator.updatePartPayment(${event.id}, 'amount', this.value)"
-                       placeholder="Amount (₹)">
-                <span>Month ${event.month}: ${this.formatCurrency(event.amount)}</span>
+                       placeholder="Amount (₹)" style="width: 100%;">
+                <span style="font-size: 0.8rem;">${new Date(event.date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}: ${this.formatCurrency(event.amount)}</span>
                 <button class="remove-btn" onclick="calculator.removePartPayment(${event.id})">Remove</button>
             </div>
         `).join('');
@@ -1724,13 +1918,13 @@ class EMICalculator {
         const container = document.getElementById('rate-changes-list');
         container.innerHTML = this.advancedEvents.rateChanges.map(event => `
             <div class="scenario-item">
-                <input type="number" value="${event.month}" min="1" max="240"
-                       onchange="calculator.updateRateChange(${event.id}, 'month', this.value)"
-                       placeholder="Month">
+                <input type="date" value="${event.date}"
+                       onchange="calculator.updateRateChange(${event.id}, 'date', this.value)"
+                       style="width: 100%;">
                 <input type="number" value="${event.newRate}" min="0.01" max="50" step="0.01"
                        onchange="calculator.updateRateChange(${event.id}, 'newRate', this.value)"
-                       placeholder="New Rate (%)">
-                <span>Month ${event.month}: ${event.newRate}%</span>
+                       placeholder="New Rate (%)" style="width: 100%;">
+                <span style="font-size: 0.8rem;">${new Date(event.date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}: ${event.newRate}%</span>
                 <button class="remove-btn" onclick="calculator.removeRateChange(${event.id})">Remove</button>
             </div>
         `).join('');
@@ -1739,14 +1933,17 @@ class EMICalculator {
     renderEmiChanges() {
         const container = document.getElementById('emi-changes-list');
         container.innerHTML = this.advancedEvents.emiChanges.map(event => `
-            <div class="scenario-item">
-                <input type="number" value="${event.month}" min="1" max="240"
-                       onchange="calculator.updateEmiChange(${event.id}, 'month', this.value)"
-                       placeholder="Month">
+            <div class="scenario-item ${event.isGradual ? 'gradual-item' : ''}">
+                <input type="date" value="${event.date}"
+                       onchange="calculator.updateEmiChange(${event.id}, 'date', this.value)"
+                       style="width: 100%;" ${event.isGradual ? 'disabled' : ''}>
                 <input type="number" value="${event.newEMI}" min="1000" step="100"
                        onchange="calculator.updateEmiChange(${event.id}, 'newEMI', this.value)"
-                       placeholder="New EMI (₹)">
-                <span>Month ${event.month}: ${this.formatCurrency(event.newEMI)}</span>
+                       placeholder="New EMI (₹)" style="width: 100%;">
+                <span style="font-size: 0.8rem;">
+                    ${new Date(event.date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}: ${this.formatCurrency(event.newEMI)}
+                    ${event.isGradual ? ` (Year ${event.gradualYear})` : ''}
+                </span>
                 <button class="remove-btn" onclick="calculator.removeEmiChange(${event.id})">Remove</button>
             </div>
         `).join('');
@@ -1755,7 +1952,11 @@ class EMICalculator {
     updatePartPayment(id, field, value) {
         const event = this.advancedEvents.partPayments.find(e => e.id === id);
         if (event) {
-            event[field] = parseFloat(value);
+            if (field === 'date') {
+                event[field] = value;
+            } else {
+                event[field] = parseFloat(value);
+            }
             this.renderPartPayments();
         }
     }
@@ -1763,7 +1964,11 @@ class EMICalculator {
     updateRateChange(id, field, value) {
         const event = this.advancedEvents.rateChanges.find(e => e.id === id);
         if (event) {
-            event[field] = parseFloat(value);
+            if (field === 'date') {
+                event[field] = value;
+            } else {
+                event[field] = parseFloat(value);
+            }
             this.renderRateChanges();
         }
     }
@@ -1771,7 +1976,11 @@ class EMICalculator {
     updateEmiChange(id, field, value) {
         const event = this.advancedEvents.emiChanges.find(e => e.id === id);
         if (event) {
-            event[field] = parseFloat(value);
+            if (field === 'date') {
+                event[field] = value;
+            } else {
+                event[field] = parseFloat(value);
+            }
             this.renderEmiChanges();
         }
     }
@@ -1789,6 +1998,50 @@ class EMICalculator {
     removeEmiChange(id) {
         this.advancedEvents.emiChanges = this.advancedEvents.emiChanges.filter(e => e.id !== id);
         this.renderEmiChanges();
+    }
+
+    addGradualIncrease() {
+        const startDate = document.getElementById('gradual-start-date').value;
+        const increasePercent = parseFloat(document.getElementById('gradual-increase-percent').value);
+        const maxYears = parseInt(document.getElementById('gradual-max-years').value);
+        
+        if (!startDate || !increasePercent || !maxYears) {
+            alert('Please fill in all gradual increase fields');
+            return;
+        }
+        
+        const currentEMI = this.getCurrentEMI();
+        let emi = currentEMI;
+        
+        for (let year = 0; year < maxYears; year++) {
+            const eventDate = new Date(startDate);
+            eventDate.setFullYear(eventDate.getFullYear() + year);
+            
+            emi = emi * (1 + increasePercent / 100);
+            
+            const year_str = eventDate.getFullYear();
+            const month_str = String(eventDate.getMonth() + 1).padStart(2, '0');
+            const day_str = String(eventDate.getDate()).padStart(2, '0');
+            const dateString = `${year_str}-${month_str}-${day_str}`;
+            
+            this.advancedEvents.emiChanges.push({
+                id: Date.now() + year,
+                date: dateString,
+                newEMI: Math.round(emi),
+                isGradual: true,
+                gradualYear: year + 1
+            });
+        }
+        
+        this.renderEmiChanges();
+        
+        // Show success message
+        const message = `Added ${maxYears} gradual EMI increases starting ${startDate} with ${increasePercent}% annual growth`;
+        document.getElementById('prepayment-results').innerHTML = `
+            <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+                <strong>✓ Gradual Increase Added:</strong> ${message}
+            </div>
+        `;
     }
 
     clearAllEvents() {
@@ -1813,11 +2066,11 @@ class EMICalculator {
             return;
         }
 
-        // Combine all events and sort by month
+        // Combine all events and sort by date, then convert to month numbers
         const allEvents = [
-            ...this.advancedEvents.partPayments.map(e => ({...e, type: 'partPayment'})),
-            ...this.advancedEvents.rateChanges.map(e => ({...e, type: 'rateChange'})),
-            ...this.advancedEvents.emiChanges.map(e => ({...e, type: 'emiChange'}))
+            ...this.advancedEvents.partPayments.map(e => ({...e, type: 'partPayment', month: this.dateToMonthNumber(e.date)})),
+            ...this.advancedEvents.rateChanges.map(e => ({...e, type: 'rateChange', month: this.dateToMonthNumber(e.date)})),
+            ...this.advancedEvents.emiChanges.map(e => ({...e, type: 'emiChange', month: this.dateToMonthNumber(e.date)}))
         ].sort((a, b) => a.month - b.month);
 
         const monthlyRate = annualRate / (12 * 100);
@@ -1900,41 +2153,84 @@ class EMICalculator {
         const interestSaved = data.originalInterest - data.advancedResult.totalInterest;
         const totalSaved = interestSaved;
 
+        // Calculate loan closure dates
+        const loanStartDate = this.getLoanStartDate();
+        const originalClosureDate = this.getInstallmentDate(loanStartDate, data.originalTenure * 12);
+        const optimizedClosureDate = this.getInstallmentDate(loanStartDate, data.advancedResult.actualTenure);
+        
+        // Convert savings to words
+        const savingsInWords = this.convertAmountToWords(interestSaved);
+        const timeSavedInWords = this.getTimeSavedInWords(Math.round(timeSaved * 12));
+        
         resultsContainer.innerHTML = `
             <div class="scenario-summary">
-                <h4>Advanced Scenario Results</h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-                    <div>
-                        <strong>Original Scenario</strong><br>
-                        Tenure: ${data.originalTenure} years<br>
-                        Total Interest: ${this.formatCurrency(data.originalInterest)}
-                    </div>
-                    <div>
-                        <strong>Advanced Scenario</strong><br>
-                        Tenure: ${(data.advancedResult.actualTenure / 12).toFixed(1)} years<br>
-                        Total Interest: ${this.formatCurrency(data.advancedResult.totalInterest)}
-                    </div>
-                    <div>
-                        <strong>Savings</strong><br>
-                        Time Saved: ${timeSaved.toFixed(1)} years<br>
-                        Interest Saved: ${this.formatCurrency(interestSaved)}
+                <h4>Optimized Strategy Results</h4>
+                
+                <div class="savings-highlight">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.1rem; margin-bottom: 8px;">💰 Total Savings</div>
+                        <div class="savings-amount">${this.formatCurrency(interestSaved)}</div>
+                        <div style="font-size: 1rem; margin-top: 8px; font-weight: 600; color: #ffd700;">
+                            You save approximately <strong>${savingsInWords}</strong> in interest!
+                        </div>
+                        <div style="font-size: 0.9rem; margin-top: 5px; opacity: 0.9;">Complete your loan <strong>${timeSavedInWords}</strong> earlier!</div>
                     </div>
                 </div>
                 
-                <div class="event-timeline">
-                    ${data.events.map(event => {
-                        if (event.type === 'partPayment') {
-                            return `<span class="event-badge event-part-payment">Month ${event.month}: Part Payment ${this.formatCurrency(event.amount)}</span>`;
-                        } else if (event.type === 'rateChange') {
-                            return `<span class="event-badge event-rate-change">Month ${event.month}: Rate ${event.newRate}%</span>`;
-                        } else if (event.type === 'emiChange') {
-                            return `<span class="event-badge event-emi-change">Month ${event.month}: EMI ${this.formatCurrency(event.newEMI)}</span>`;
-                        }
-                    }).join('')}
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <strong>📅 Original Timeline</strong>
+                        <div class="value">${data.originalTenure} years</div>
+                        <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">
+                            Start: ${loanStartDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}<br>
+                            End: ${originalClosureDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                        </div>
+                        <div style="font-size: 0.9rem; opacity: 0.8; margin-top: 6px; color: #ff6b6b;">
+                            Interest: ${this.formatCurrency(data.originalInterest)}
+                        </div>
+                    </div>
+                    <div class="comparison-item">
+                        <strong>🚀 Optimized Timeline</strong>
+                        <div class="value">${(data.advancedResult.actualTenure / 12).toFixed(1)} years</div>
+                        <div style="font-size: 0.85rem; opacity: 0.8; margin-top: 4px;">
+                            Start: ${loanStartDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}<br>
+                            End: ${optimizedClosureDate.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                        </div>
+                        <div style="font-size: 0.9rem; opacity: 0.8; margin-top: 6px; color: #4ecdc4;">
+                            Interest: ${this.formatCurrency(data.advancedResult.totalInterest)}
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border-left: 4px solid #4ecdc4;">
+                    <div style="font-size: 1rem; margin-bottom: 10px; text-align: center; font-weight: 600;">
+                        🎯 Your Optimization Strategy
+                    </div>
+                    <div style="text-align: center; margin-bottom: 15px; font-size: 0.9rem; opacity: 0.9;">
+                        By implementing ${data.events.length} strategic action${data.events.length > 1 ? 's' : ''}, you'll save <strong>${savingsInWords}</strong> and finish <strong>${timeSavedInWords}</strong> early.
+                    </div>
+                    <div class="event-timeline">
+                        ${data.events.map(event => {
+                            const eventDate = new Date(event.date).toLocaleDateString('en-IN', { month: 'short', year: '2-digit' });
+                            if (event.type === 'partPayment') {
+                                return `<span class="strategy-badge">${eventDate}: Part Payment ${this.formatCurrency(event.amount)}</span>`;
+                            } else if (event.type === 'rateChange') {
+                                return `<span class="strategy-badge">${eventDate}: Rate ${event.newRate}%</span>`;
+                            } else if (event.type === 'emiChange') {
+                                return `<span class="strategy-badge">${eventDate}: EMI ${this.formatCurrency(event.newEMI)}${event.isGradual ? ' (Auto)' : ''}</span>`;
+                            }
+                        }).join('')}
+                    </div>
                 </div>
             </div>
         `;
 
+        // Hide the separate loan amortization section since we've merged the info
+        document.querySelector('.chart-section h2').style.display = 'none';
+        document.getElementById('loan-closure-info').style.display = 'none';
+        
+
+        
         // Generate advanced comparison chart and table
         this.generateAdvancedComparisonChart(data);
     }
@@ -1946,9 +2242,9 @@ class EMICalculator {
         
         // Combine all events for the detailed schedule
         const allEvents = [
-            ...this.advancedEvents.partPayments.map(e => ({...e, type: 'partPayment'})),
-            ...this.advancedEvents.rateChanges.map(e => ({...e, type: 'rateChange'})),
-            ...this.advancedEvents.emiChanges.map(e => ({...e, type: 'emiChange'}))
+            ...this.advancedEvents.partPayments.map(e => ({...e, type: 'partPayment', month: this.dateToMonthNumber(e.date)})),
+            ...this.advancedEvents.rateChanges.map(e => ({...e, type: 'rateChange', month: this.dateToMonthNumber(e.date)})),
+            ...this.advancedEvents.emiChanges.map(e => ({...e, type: 'emiChange', month: this.dateToMonthNumber(e.date)}))
         ].sort((a, b) => a.month - b.month);
 
         const specialEvents = {

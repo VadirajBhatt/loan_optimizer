@@ -7,11 +7,13 @@
     <title>EMI Calculator & Loan Optimizer</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
     <div class="container">
         <header>
+            <button class="theme-toggle" id="theme-toggle">🌙 Dark</button>
             <h1>EMI Calculator & Loan Optimizer</h1>
             <p>Calculate your EMI and find the best prepayment strategy</p>
         </header>
@@ -19,12 +21,12 @@
         <div class="calculator-section">
             <div class="input-group">
                 <label for="principal">Outstanding Principal Amount (₹)</label>
-                <input type="text" id="principal" value="10,00,000" min="1000" step="1000" placeholder="Enter loan amount">
+                <input type="text" id="principal" value="25,00,000" min="1000" step="1000" placeholder="Enter loan amount">
             </div>
 
             <div class="input-group">
                 <label for="rate">Annual Interest Rate (%)</label>
-                <input type="number" id="rate" value="8.50" min="0.01" max="50" step="0.01">
+                <input type="number" id="rate" value="8.90" min="0.01" max="50" step="0.01">
             </div>
 
             <div class="input-group">
@@ -62,98 +64,59 @@
             <div class="prepayment-section">
                 <h2>Prepayment Strategy</h2>
 
-                <div class="strategy-tabs">
-                    <button class="tab-btn active" data-tab="percentage">By Percentage</button>
-                    <button class="tab-btn" data-tab="amount">By EMI Amount</button>
-                    <button class="tab-btn" data-tab="partpayment">Part Payment</button>
-                    <button class="tab-btn" data-tab="ratechange">Rate Change</button>
-                    <button class="tab-btn" data-tab="advanced">Advanced Scenarios</button>
-                </div>
+                <div class="advanced-scenarios">
+                    <h2 style="text-align: center; color: var(--text-color); margin-bottom: 10px;">Advanced Loan Optimization</h2>
+                    <p style="text-align: center; margin-bottom: 25px; color: var(--text-color); opacity: 0.7;">Plan multiple part payments, rate changes, and EMI strategies throughout your loan journey.</p>
+                    
+                    <div class="scenario-section">
+                        <h4>💰 Part Payments</h4>
+                        <p style="color: var(--text-color); opacity: 0.7; font-size: 0.9rem; margin-bottom: 10px;">Add lump sum payments to reduce principal</p>
+                        <div id="part-payments-list"></div>
+                        <button id="add-part-payment" class="btn-secondary" style="margin-bottom: 15px;">Add Part Payment</button>
+                    </div>
 
-                <div id="percentage-tab" class="tab-content active">
-                    <div class="input-group">
-                        <label for="increase-percent">EMI Increase Percentage (%)</label>
-                        <input type="number" id="increase-percent" value="10" min="1" max="100" step="1">
-                        <button id="calculate-prepayment" class="btn-secondary">Calculate Savings</button>
+                    <div class="scenario-section">
+                        <h4>📈 Interest Rate Changes</h4>
+                        <p style="color: var(--text-color); opacity: 0.7; font-size: 0.9rem; margin-bottom: 10px;">Model rate fluctuations over time</p>
+                        <div id="rate-changes-list"></div>
+                        <button id="add-rate-change" class="btn-secondary" style="margin-bottom: 15px;">Add Rate Change</button>
                     </div>
-                </div>
 
-                <div id="amount-tab" class="tab-content">
-                    <div class="input-group">
-                        <label for="custom-emi">Custom EMI Amount (₹)</label>
-                        <input type="number" id="custom-emi" min="1000" step="100" placeholder="Enter your desired EMI">
-                        <button id="calculate-custom-emi" class="btn-secondary">Calculate New Tenure</button>
+                    <div class="scenario-section">
+                        <h4>🚀 EMI Changes</h4>
+                        <p style="color: var(--text-color); opacity: 0.7; font-size: 0.9rem; margin-bottom: 10px;">Increase EMI as your income grows</p>
+                        <div id="emi-changes-list"></div>
+                        <button id="add-emi-change" class="btn-secondary" style="margin-bottom: 15px;">Add EMI Change</button>
                     </div>
-                </div>
 
-                <div id="partpayment-tab" class="tab-content">
-                    <div class="input-group">
-                        <label for="part-payment-amount">Part Payment Amount (₹)</label>
-                        <input type="number" id="part-payment-amount" min="1000" step="1000"
-                            placeholder="Enter lump sum amount">
-                    </div>
-                    <div class="input-group">
-                        <label for="part-payment-month">Payment After Months</label>
-                        <input type="number" id="part-payment-month" min="1" max="240" value="12"
-                            placeholder="Number of months from now">
-                    </div>
-                    <div class="input-group">
-                        <label for="part-payment-option">Reduce:</label>
-                        <select id="part-payment-option">
-                            <option value="tenure">Loan Tenure</option>
-                            <option value="emi">EMI Amount</option>
-                        </select>
-                    </div>
-                    <button id="calculate-part-payment" class="btn-secondary">Calculate Impact</button>
-                </div>
-
-                <div id="ratechange-tab" class="tab-content">
-                    <div class="input-group">
-                        <label for="new-interest-rate">New Interest Rate (%)</label>
-                        <input type="number" id="new-interest-rate" min="0.01" max="50" step="0.01" value="7.50"
-                            placeholder="Enter new interest rate">
-                    </div>
-                    <div class="input-group">
-                        <label for="rate-change-month">Rate Change After Months</label>
-                        <input type="number" id="rate-change-month" min="1" max="240" value="12"
-                            placeholder="Number of months from now">
-                    </div>
-                    <div class="input-group">
-                        <label for="rate-change-option">Keep:</label>
-                        <select id="rate-change-option">
-                            <option value="tenure">Same Tenure</option>
-                            <option value="emi">Same EMI</option>
-                        </select>
-                    </div>
-                    <button id="calculate-rate-change" class="btn-secondary">Calculate Impact</button>
-                </div>
-
-                <div id="advanced-tab" class="tab-content">
-                    <div class="advanced-scenarios">
-                        <h3>Multiple Events Scenario</h3>
-                        <p style="margin-bottom: 15px; color: #666;">Plan multiple part payments, rate changes, and EMI increases throughout your loan tenure.</p>
-                        
-                        <div class="scenario-section">
-                            <h4>Part Payments</h4>
-                            <div id="part-payments-list"></div>
-                            <button id="add-part-payment" class="btn-secondary" style="margin-bottom: 15px;">Add Part Payment</button>
+                    <div class="scenario-section">
+                        <h4>📊 Gradual EMI Increase</h4>
+                        <p style="color: var(--text-color); opacity: 0.7; font-size: 0.9rem; margin-bottom: 10px;">Automatically increase EMI by a percentage every year</p>
+                        <div class="gradual-increase-controls">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                <div>
+                                    <label for="gradual-start-date" style="font-size: 0.9rem;">Start Date:</label>
+                                    <input type="date" id="gradual-start-date" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label for="gradual-increase-percent" style="font-size: 0.9rem;">Annual Increase (%):</label>
+                                    <input type="number" id="gradual-increase-percent" value="5" min="1" max="50" step="0.5" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label for="gradual-max-years" style="font-size: 0.9rem;">For Years:</label>
+                                    <input type="number" id="gradual-max-years" value="10" min="1" max="30" step="1" style="width: 100%;">
+                                </div>
+                            </div>
+                            <button id="add-gradual-increase" class="btn-secondary">Add Gradual Increase</button>
                         </div>
-
-                        <div class="scenario-section">
-                            <h4>Rate Changes</h4>
-                            <div id="rate-changes-list"></div>
-                            <button id="add-rate-change" class="btn-secondary" style="margin-bottom: 15px;">Add Rate Change</button>
-                        </div>
-
-                        <div class="scenario-section">
-                            <h4>EMI Changes</h4>
-                            <div id="emi-changes-list"></div>
-                            <button id="add-emi-change" class="btn-secondary" style="margin-bottom: 15px;">Add EMI Change</button>
-                        </div>
-
-                        <button id="calculate-advanced-scenario" class="btn-primary">Calculate Advanced Scenario</button>
-                        <button id="clear-all-events" class="btn-secondary" style="margin-left: 10px;">Clear All</button>
                     </div>
+
+                    <div style="text-align: center; margin-top: 25px;">
+                        <button id="calculate-advanced-scenario" class="btn-primary" style="padding: 15px 40px; font-size: 1.1rem;">Calculate Optimized Scenario</button>
+                        <button id="clear-all-events" class="btn-secondary" style="margin-left: 15px;">Clear All Events</button>
+                    </div>
+                    
+
                 </div>
 
                 <div id="prepayment-results" class="prepayment-results"></div>
@@ -193,6 +156,13 @@
                 </div>
             </div>
         </div>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <p>Crafted with 🔥 passion by <strong>Vadiraj Bhatt</strong> powered by the incredible <strong>Kiro AI</strong>!</p>
+                <p style="font-size: 0.8rem; opacity: 0.8;">Huge shoutout to the amazing Kiro team - you've built something truly revolutionary! 🚀✨</p>
+            </div>
+        </footer>
     </div>
 
     <script src="script.js"></script>

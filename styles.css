@@ -4,27 +4,101 @@
     box-sizing: border-box;
 }
 
+:root {
+    /* Light theme variables */
+    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --container-bg: white;
+    --text-color: #2c3e50;
+    --header-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    --section-bg: #f8f9fa;
+    --border-color: #e9ecef;
+    --input-bg: white;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --hover-shadow: rgba(0, 0, 0, 0.2);
+    --table-hover: #f8f9fa;
+    --table-even: #fdfdfd;
+    --table-even-hover: #f0f0f0;
+    --gradual-bg: #f0f8ff;
+    --gradual-border: #3498db;
+    --year-total-bg: #e8f4f8;
+    --year-total-border: #3498db;
+    --savings-positive-bg: #d4edda;
+    --savings-positive-text: #155724;
+    --savings-negative-bg: #f8d7da;
+    --savings-negative-text: #721c24;
+}
+
+[data-theme="dark"] {
+    /* Dark theme variables */
+    --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --container-bg: #2d3748;
+    --text-color: #e2e8f0;
+    --header-gradient: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    --section-bg: #1a202c;
+    --border-color: #4a5568;
+    --input-bg: #2d3748;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --hover-shadow: rgba(0, 0, 0, 0.4);
+    --table-hover: #374151;
+    --table-even: #1f2937;
+    --table-even-hover: #374151;
+    --gradual-bg: #1a365d;
+    --gradual-border: #3182ce;
+    --year-total-bg: #1e3a8a;
+    --year-total-border: #3b82f6;
+    --savings-positive-bg: #065f46;
+    --savings-positive-text: #6ee7b7;
+    --savings-negative-bg: #7f1d1d;
+    --savings-negative-text: #fca5a5;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--bg-gradient);
     min-height: 100vh;
     padding: 20px;
+    color: var(--text-color);
+    transition: all 0.3s ease;
 }
 
 .container {
     max-width: 800px;
     margin: 0 auto;
-    background: white;
+    background: var(--container-bg);
     border-radius: 15px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px var(--shadow);
     overflow: hidden;
+    transition: all 0.3s ease;
 }
 
 header {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    background: var(--header-gradient);
     color: white;
     padding: 30px;
     text-align: center;
+    position: relative;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
 }
 
 header h1 {
@@ -39,7 +113,8 @@ header p {
 
 .calculator-section {
     padding: 30px;
-    background: #f8f9fa;
+    background: var(--section-bg);
+    transition: all 0.3s ease;
 }
 
 .input-group {
@@ -50,17 +125,19 @@ header p {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-color);
     font-size: 1rem;
 }
 
 .input-group input {
     width: 100%;
     padding: 12px 15px;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 1rem;
-    transition: border-color 0.3s ease;
+    background: var(--input-bg);
+    color: var(--text-color);
+    transition: all 0.3s ease;
 }
 
 #principal {
@@ -162,13 +239,14 @@ header p {
 }
 
 .prepayment-section {
-    background: #f8f9fa;
+    background: var(--section-bg);
     padding: 25px;
     border-radius: 12px;
+    transition: all 0.3s ease;
 }
 
 .prepayment-section h2 {
-    color: #2c3e50;
+    color: var(--text-color);
     margin-bottom: 20px;
     text-align: center;
 }
@@ -215,14 +293,15 @@ header p {
 }
 
 .chart-section {
-    background: #f8f9fa;
+    background: var(--section-bg);
     padding: 25px;
     border-radius: 12px;
     margin-top: 30px;
+    transition: all 0.3s ease;
 }
 
 .chart-section h2 {
-    color: #2c3e50;
+    color: var(--text-color);
     margin-bottom: 20px;
     text-align: center;
 }
@@ -240,15 +319,16 @@ header p {
 .chart-container {
     position: relative;
     height: 400px;
-    background: white;
+    background: var(--container-bg);
     border-radius: 8px;
     padding: 15px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px var(--shadow);
+    transition: all 0.3s ease;
 }
 
 .chart-container h3 {
     text-align: center;
-    color: #2c3e50;
+    color: var(--text-color);
     margin-bottom: 15px;
     font-size: 1.1rem;
 }
@@ -293,14 +373,15 @@ header p {
 }
 
 .installment-section {
-    background: #f8f9fa;
+    background: var(--section-bg);
     padding: 25px;
     border-radius: 12px;
     margin-top: 30px;
+    transition: all 0.3s ease;
 }
 
 .installment-section h2 {
-    color: #2c3e50;
+    color: var(--text-color);
     margin-bottom: 20px;
     text-align: center;
 }
@@ -325,7 +406,7 @@ header p {
 
 .option-group label {
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--text-color);
     white-space: nowrap;
 }
 
@@ -337,9 +418,10 @@ header p {
 }
 
 .installment-table {
-    background: white;
+    background: var(--container-bg);
     border-radius: 8px;
     overflow: hidden;
+    transition: all 0.3s ease;
 }
 
 .installment-table table {
@@ -349,7 +431,7 @@ header p {
 }
 
 .installment-table th {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    background: var(--header-gradient);
     color: white;
     padding: 6px 4px;
     text-align: center;
@@ -364,21 +446,22 @@ header p {
 .installment-table td {
     padding: 4px 3px;
     text-align: center;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border-color);
     font-size: 0.7rem;
     line-height: 1.3;
+    color: var(--text-color);
 }
 
 .installment-table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--table-hover);
 }
 
 .installment-table tbody tr:nth-child(even) {
-    background-color: #fdfdfd;
+    background-color: var(--table-even);
 }
 
 .installment-table tbody tr:nth-child(even):hover {
-    background-color: #f0f0f0;
+    background-color: var(--table-even-hover);
 }
 
 .currency {
@@ -396,9 +479,10 @@ header p {
 }
 
 .year-total {
-    background-color: #e8f4f8 !important;
+    background-color: var(--year-total-bg) !important;
+    color: var(--text-color) !important;
     font-weight: bold;
-    border-top: 2px solid #3498db;
+    border-top: 2px solid var(--year-total-border);
     font-size: 0.65rem;
     padding: 3px 2px;
 }
@@ -431,15 +515,15 @@ header p {
 }
 
 .savings-positive {
-    background-color: #d4edda !important;
-    color: #155724;
+    background-color: var(--savings-positive-bg) !important;
+    color: var(--savings-positive-text) !important;
     font-weight: bold;
     font-size: 0.6rem;
 }
 
 .savings-negative {
-    background-color: #f8d7da !important;
-    color: #721c24;
+    background-color: var(--savings-negative-bg) !important;
+    color: var(--savings-negative-text) !important;
     font-weight: bold;
     font-size: 0.6rem;
 }
@@ -449,21 +533,23 @@ header p {
 }
 
 .advanced-scenarios {
-    background: #f8f9fa;
+    background: var(--section-bg);
     padding: 20px;
     border-radius: 8px;
+    transition: all 0.3s ease;
 }
 
 .scenario-section {
     margin-bottom: 25px;
     padding: 15px;
-    background: white;
+    background: var(--container-bg);
     border-radius: 6px;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
 }
 
 .scenario-section h4 {
-    color: #2c3e50;
+    color: var(--text-color);
     margin-bottom: 15px;
     font-size: 1.1rem;
 }
@@ -474,17 +560,21 @@ header p {
     gap: 10px;
     align-items: center;
     padding: 10px;
-    background: #f8f9fa;
+    background: var(--section-bg);
     border-radius: 4px;
     margin-bottom: 8px;
+    transition: all 0.3s ease;
 }
 
 .scenario-item input,
 .scenario-item select {
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 0.9rem;
+    background: var(--input-bg);
+    color: var(--text-color);
+    transition: all 0.3s ease;
 }
 
 .remove-btn {
@@ -502,15 +592,60 @@ header p {
 }
 
 .scenario-summary {
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 25px;
+    border-radius: 12px;
     margin-top: 20px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.scenario-summary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ffd700, #ff6b6b, #4ecdc4, #45b7d1);
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+
+    0%,
+    100% {
+        opacity: 0.8;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 .scenario-summary h4 {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.scenario-summary h4::before {
+    content: '🎯';
+    font-size: 1.2em;
+}
+
+.scenario-summary h4::after {
+    content: '✨';
+    font-size: 1.2em;
 }
 
 .event-timeline {
@@ -542,15 +677,89 @@ header p {
     color: white;
 }
 
+.footer {
+    background: var(--header-gradient);
+    color: white;
+    text-align: center;
+    padding: 25px 30px;
+    margin-top: 0;
+    transition: all 0.3s ease;
+}
+
+.footer-content p {
+    margin: 8px 0;
+    font-size: 0.95rem;
+}
+
+.footer-content strong {
+    color: #667eea;
+    font-weight: 700;
+}
+
+.footer-content p:first-child {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.footer-content p:last-child {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.gradual-increase-controls {
+    background: var(--gradual-bg);
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid var(--gradual-border);
+    transition: all 0.3s ease;
+}
+
+.gradual-increase-controls label {
+    color: var(--text-color);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.gradual-increase-controls input {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: var(--input-bg);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.scenario-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.gradual-item {
+    background: var(--gradual-bg) !important;
+    border: 1px solid var(--gradual-border);
+}
+
+.gradual-item input[disabled] {
+    background: var(--border-color);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 select {
     width: 100%;
     padding: 12px 15px;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 1rem;
-    background: white;
+    background: var(--input-bg);
+    color: var(--text-color);
     cursor: pointer;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 select:focus {
@@ -605,6 +814,13 @@ select:focus {
 @media (max-width: 768px) {
     body {
         padding: 10px;
+    }
+
+    .theme-toggle {
+        top: 15px;
+        right: 15px;
+        padding: 6px 10px;
+        font-size: 0.8rem;
     }
 
     .container {
@@ -797,6 +1013,13 @@ select:focus {
         padding: 5px;
     }
 
+    .theme-toggle {
+        top: 10px;
+        right: 10px;
+        padding: 5px 8px;
+        font-size: 0.75rem;
+    }
+
     header h1 {
         font-size: 1.4rem;
     }
@@ -928,4 +1151,113 @@ select:focus {
         font-size: 0.7rem;
         padding: 6px 10px;
     }
+}
+
+/* E
+nhanced Optimized Strategy Results */
+.scenario-summary .savings-highlight {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid #ffd700;
+}
+
+.scenario-summary .savings-amount {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #ffd700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.scenario-summary .comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.scenario-summary .comparison-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.scenario-summary .comparison-item strong {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    opacity: 0.9;
+}
+
+.scenario-summary .comparison-item .value {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.scenario-summary .strategy-badge {
+    display: inline-block;
+    background: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 2px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}/*
+ Enhanced timeline and closure information */
+.scenario-summary .timeline-info {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 0;
+    border-left: 3px solid #4ecdc4;
+}
+
+.scenario-summary .savings-callout {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 193, 7, 0.1));
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.scenario-summary .strategy-summary {
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.scenario-summary .closure-dates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.scenario-summary .closure-date-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scenario-summary .closure-date-item .label {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-bottom: 4px;
+}
+
+.scenario-summary .closure-date-item .value {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
