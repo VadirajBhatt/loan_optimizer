@@ -34,12 +34,26 @@ class EMICalculator {
         // Set default loan start date to today
         this.setDefaultLoanStartDate();
         
-        // Auto-calculate on input change
+        // Auto-calculate with default values
+        setTimeout(() => {
+            this.calculateEMI();
+            this.hideCalculateButton();
+        }, 100);
+        
+        // Auto-calculate on input change and manage button visibility
         ['principal', 'rate', 'tenure', 'loan-start-date'].forEach(id => {
-            document.getElementById(id).addEventListener('input', () => this.calculateEMI());
+            const element = document.getElementById(id);
+            element.addEventListener('input', () => {
+                this.calculateEMI();
+                this.hideCalculateButton();
+            });
+            element.addEventListener('focus', () => this.hideCalculateButton());
         });
         
-        document.getElementById('loan-start-date').addEventListener('change', () => this.calculateEMI());
+        document.getElementById('loan-start-date').addEventListener('change', () => {
+            this.calculateEMI();
+            this.hideCalculateButton();
+        });
 
         // Add currency formatting for principal input
         document.getElementById('principal').addEventListener('input', (e) => {
@@ -1108,10 +1122,11 @@ class EMICalculator {
         const isDark = theme === 'dark';
         const textColor = isDark ? '#e2e8f0' : '#2c3e50';
         const gridColor = isDark ? '#4a5568' : '#e9ecef';
+        const isMobile = window.innerWidth <= 768;
         
         return {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
             interaction: {
                 mode: 'index',
                 intersect: false,
@@ -1122,10 +1137,12 @@ class EMICalculator {
                     labels: {
                         color: textColor,
                         font: {
-                            size: 12,
+                            size: isMobile ? 9 : 12,
                             weight: '600'
                         },
-                        padding: 20
+                        padding: isMobile ? 8 : 20,
+                        boxWidth: isMobile ? 12 : 20,
+                        usePointStyle: isMobile
                     }
                 },
                 tooltip: {
@@ -1133,7 +1150,13 @@ class EMICalculator {
                     titleColor: textColor,
                     bodyColor: textColor,
                     borderColor: isDark ? '#4a5568' : '#ccc',
-                    borderWidth: 1
+                    borderWidth: 1,
+                    titleFont: {
+                        size: isMobile ? 10 : 12
+                    },
+                    bodyFont: {
+                        size: isMobile ? 9 : 11
+                    }
                 }
             },
             scales: {
@@ -1144,17 +1167,18 @@ class EMICalculator {
                         text: 'Timeline',
                         color: textColor,
                         font: {
-                            size: 12,
+                            size: isMobile ? 10 : 12,
                             weight: '600'
                         }
                     },
                     ticks: {
-                        maxRotation: 45,
+                        maxRotation: isMobile ? 90 : 45,
                         minRotation: 45,
                         color: textColor,
                         font: {
-                            size: 10
-                        }
+                            size: isMobile ? 8 : 10
+                        },
+                        maxTicksLimit: isMobile ? 12 : 24
                     },
                     grid: {
                         color: gridColor
@@ -1169,18 +1193,23 @@ class EMICalculator {
                         text: 'EMI Components (₹)',
                         color: textColor,
                         font: {
-                            size: 12,
+                            size: isMobile ? 10 : 12,
                             weight: '600'
                         }
                     },
                     ticks: {
                         color: textColor,
                         font: {
-                            size: 10
+                            size: isMobile ? 8 : 10
                         },
                         callback: function (value) {
+                            if (isMobile) {
+                                if (value >= 100000) return '₹' + (value / 100000).toFixed(0) + 'L';
+                                return '₹' + (value / 1000).toFixed(0) + 'K';
+                            }
                             return '₹' + (value / 1000).toFixed(0) + 'K';
-                        }
+                        },
+                        maxTicksLimit: isMobile ? 4 : 8
                     },
                     grid: {
                         color: gridColor
@@ -1195,7 +1224,7 @@ class EMICalculator {
                         text: 'Outstanding Balance (₹)',
                         color: textColor,
                         font: {
-                            size: 12,
+                            size: isMobile ? 10 : 12,
                             weight: '600'
                         }
                     },
@@ -1206,11 +1235,16 @@ class EMICalculator {
                     ticks: {
                         color: textColor,
                         font: {
-                            size: 10
+                            size: isMobile ? 8 : 10
                         },
                         callback: function (value) {
+                            if (isMobile) {
+                                if (value >= 10000000) return '₹' + (value / 10000000).toFixed(1) + 'Cr';
+                                return '₹' + (value / 100000).toFixed(0) + 'L';
+                            }
                             return '₹' + (value / 100000).toFixed(1) + 'L';
-                        }
+                        },
+                        maxTicksLimit: isMobile ? 4 : 6
                     }
                 }
             }
@@ -1317,7 +1351,7 @@ class EMICalculator {
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-        return `${monthNames[installmentDate.getMonth()]} ${installmentDate.getFullYear()}`;
+        return `${monthNames[installmentDate.getMonth()]} ${installmentDate.getFullYear()-2000}`;
     }
 
     displayLoanClosureInfo(originalTenureMonths, newTenureMonths = null) {
@@ -1427,6 +1461,14 @@ class EMICalculator {
         return timeSavedText;
     }
 
+    hideCalculateButton() {
+        document.getElementById('calculate').style.display = 'none';
+    }
+
+    showCalculateButton() {
+        document.getElementById('calculate').style.display = 'block';
+    }
+
 
 
     initializeTheme() {
@@ -1467,9 +1509,9 @@ class EMICalculator {
         const button = document.getElementById('theme-toggle');
         
         if (theme === 'dark') {
-            button.innerHTML = '☀️ Light';
+            button.innerHTML = '☀️';
         } else {
-            button.innerHTML = '🌙 Dark';
+            button.innerHTML = '🌙';
         }
     }
 
@@ -1703,7 +1745,7 @@ class EMICalculator {
                     <tr>
                         <th rowspan="2">Date</th>
                         <th colspan="3">Original Schedule</th>
-                        ${this.hasComparison ? '<th colspan="3" class="comparison-header">Optimized Schedule</th><th colspan="2" class="comparison-header">Savings</th>' : ''}
+                        ${this.hasComparison ? `<th colspan="3" class="comparison-header">Optimized Schedule</th>${window.innerWidth > 768 ? '<th colspan="2" class="comparison-header">Savings</th>' : ''}` : ''}
                     </tr>
                     <tr>
                         <th>Principal (₹)</th>
@@ -1713,8 +1755,10 @@ class EMICalculator {
                             <th class="comparison-column">Principal (₹)</th>
                             <th>Interest (₹)</th>
                             <th>Outstanding (₹)</th>
-                            <th class="comparison-column">Interest Diff (₹)</th>
-                            <th>Outstanding Diff (₹)</th>
+                            ${window.innerWidth > 768 ? `
+                                <th class="comparison-column">Interest Diff (₹)</th>
+                                <th>Outstanding Diff (₹)</th>
+                            ` : ''}
                         ` : ''}
                     </tr>
                 </thead>
@@ -1739,17 +1783,19 @@ class EMICalculator {
                     tableHTML += `
                         <tr class="year-total">
                             <td><strong>${currentYear} Total</strong></td>
-                            <td class="currency"><strong>${this.formatCurrency(yearlyOriginalPrincipal)}</strong></td>
-                            <td class="currency"><strong>${this.formatCurrency(yearlyOriginalInterest)}</strong></td>
+                            <td class="currency"><strong>${this.formatCurrencyMobile(yearlyOriginalPrincipal)}</strong></td>
+                            <td class="currency"><strong>${this.formatCurrencyMobile(yearlyOriginalInterest)}</strong></td>
                             <td></td>
                             ${this.hasComparison ? `
-                                <td class="currency comparison-column"><strong>${this.formatCurrency(yearlyComparisonPrincipal)}</strong></td>
-                                <td class="currency"><strong>${this.formatCurrency(yearlyComparisonInterest)}</strong></td>
-                                <td></td>
-                                <td class="currency comparison-column ${yearlyInterestSavings >= 0 ? 'savings-positive' : 'savings-negative'}">
-                                    <strong>${yearlyInterestSavings >= 0 ? '+' : ''}${this.formatCurrency(yearlyInterestSavings)}</strong>
-                                </td>
-                                <td></td>
+                                <td class="currency comparison-column"><strong>${this.formatCurrencyMobile(yearlyComparisonPrincipal)}</strong></td>
+                                <td class="currency"><strong>${this.formatCurrencyMobile(yearlyComparisonInterest)}</strong></td>
+                                ${window.innerWidth > 768 ? `
+                                    <td></td>
+                                    <td class="currency comparison-column ${yearlyInterestSavings >= 0 ? 'savings-positive' : 'savings-negative'}">
+                                        <strong>${yearlyInterestSavings >= 0 ? '+' : ''}${this.formatCurrencyMobile(yearlyInterestSavings)}</strong>
+                                    </td>
+                                    <td></td>
+                                ` : ''}
                             ` : ''}
                         </tr>
                     `;
@@ -1796,19 +1842,21 @@ class EMICalculator {
                         month: 'short', 
                         year: '2-digit' 
                     })}</td>
-                    <td class="currency">${this.formatCurrency(originalRow.principal)}</td>
-                    <td class="currency">${this.formatCurrency(originalRow.interest)}</td>
-                    <td class="currency">${this.formatCurrency(originalRow.outstandingBalance)}</td>
+                    <td class="currency">${this.formatCurrencyMobile(originalRow.principal)}</td>
+                    <td class="currency">${this.formatCurrencyMobile(originalRow.interest)}</td>
+                    <td class="currency">${this.formatCurrencyMobile(originalRow.outstandingBalance)}</td>
                     ${this.hasComparison && comparisonRow ? `
-                        <td class="currency comparison-column">${this.formatCurrency(comparisonRow.principal)}</td>
-                        <td class="currency">${this.formatCurrency(comparisonRow.interest)}</td>
-                        <td class="currency">${this.formatCurrency(comparisonRow.outstandingBalance)}</td>
-                        <td class="currency comparison-column ${interestDiff >= 0 ? 'savings-positive' : 'savings-negative'}">
-                            ${interestDiff !== 0 ? (interestDiff >= 0 ? '+' : '') + this.formatCurrency(interestDiff) : '-'}
-                        </td>
-                        <td class="currency ${outstandingDiff >= 0 ? 'savings-positive' : 'savings-negative'}">
-                            ${outstandingDiff !== 0 ? (outstandingDiff >= 0 ? '+' : '') + this.formatCurrency(outstandingDiff) : '-'}
-                        </td>
+                        <td class="currency comparison-column">${this.formatCurrencyMobile(comparisonRow.principal)}</td>
+                        <td class="currency">${this.formatCurrencyMobile(comparisonRow.interest)}</td>
+                        <td class="currency">${this.formatCurrencyMobile(comparisonRow.outstandingBalance)}</td>
+                        ${window.innerWidth > 768 ? `
+                            <td class="currency comparison-column ${interestDiff >= 0 ? 'savings-positive' : 'savings-negative'}">
+                                ${interestDiff !== 0 ? (interestDiff >= 0 ? '+' : '') + this.formatCurrencyMobile(interestDiff) : '-'}
+                            </td>
+                            <td class="currency ${outstandingDiff >= 0 ? 'savings-positive' : 'savings-negative'}">
+                                ${outstandingDiff !== 0 ? (outstandingDiff >= 0 ? '+' : '') + this.formatCurrencyMobile(outstandingDiff) : '-'}
+                            </td>
+                        ` : ''}
                     ` : this.hasComparison ? `
                         <td class="comparison-column">-</td>
                         <td>-</td>
@@ -1826,17 +1874,19 @@ class EMICalculator {
             tableHTML += `
                 <tr class="year-total">
                     <td><strong>${currentYear} Total</strong></td>
-                    <td class="currency"><strong>${this.formatCurrency(yearlyOriginalPrincipal)}</strong></td>
-                    <td class="currency"><strong>${this.formatCurrency(yearlyOriginalInterest)}</strong></td>
+                    <td class="currency"><strong>${this.formatCurrencyMobile(yearlyOriginalPrincipal)}</strong></td>
+                    <td class="currency"><strong>${this.formatCurrencyMobile(yearlyOriginalInterest)}</strong></td>
                     <td></td>
                     ${this.hasComparison ? `
-                        <td class="currency comparison-column"><strong>${this.formatCurrency(yearlyComparisonPrincipal)}</strong></td>
-                        <td class="currency"><strong>${this.formatCurrency(yearlyComparisonInterest)}</strong></td>
-                        <td></td>
-                        <td class="currency comparison-column ${yearlyInterestSavings >= 0 ? 'savings-positive' : 'savings-negative'}">
-                            <strong>${yearlyInterestSavings >= 0 ? '+' : ''}${this.formatCurrency(yearlyInterestSavings)}</strong>
-                        </td>
-                        <td></td>
+                        <td class="currency comparison-column"><strong>${this.formatCurrencyMobile(yearlyComparisonPrincipal)}</strong></td>
+                        <td class="currency"><strong>${this.formatCurrencyMobile(yearlyComparisonInterest)}</strong></td>
+                        ${window.innerWidth > 768 ? `
+                            <td></td>
+                            <td class="currency comparison-column ${yearlyInterestSavings >= 0 ? 'savings-positive' : 'savings-negative'}">
+                                <strong>${yearlyInterestSavings >= 0 ? '+' : ''}${this.formatCurrencyMobile(yearlyInterestSavings)}</strong>
+                            </td>
+                            <td></td>
+                        ` : ''}
                     ` : ''}
                 </tr>
             `;
@@ -2378,6 +2428,21 @@ class EMICalculator {
             currency: 'INR',
             maximumFractionDigits: 0
         }).format(amount);
+    }
+
+    formatCurrencyMobile(amount) {
+        if (window.innerWidth <= 768) {
+            if (amount >= 10000000) { // 1 crore
+                return `₹${(amount / 10000000).toFixed(1)}Cr`;
+            } else if (amount >= 100000) { // 1 lakh
+                return `₹${(amount / 100000).toFixed(1)}L`;
+            } else if (amount >= 1000) { // 1 thousand
+                return `₹${(amount / 1000).toFixed(0)}K`;
+            } else {
+                return `₹${Math.round(amount)}`;
+            }
+        }
+        return this.formatCurrency(amount);
     }
 }
 
