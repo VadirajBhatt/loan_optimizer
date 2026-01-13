@@ -1902,7 +1902,7 @@ class EMICalculator {
 
     addPartPaymentEvent() {
         const id = Date.now();
-        const defaultDate = this.getDefaultEventDate(12); // 12 months from loan start
+        const defaultDate = this.getDefaultEventDate(1); // 12 months from loan start
         this.advancedEvents.partPayments.push({
             id,
             date: defaultDate,
@@ -1913,7 +1913,7 @@ class EMICalculator {
 
     addRateChangeEvent() {
         const id = Date.now();
-        const defaultDate = this.getDefaultEventDate(12);
+        const defaultDate = this.getDefaultEventDate(1);
         this.advancedEvents.rateChanges.push({
             id,
             date: defaultDate,
@@ -1925,7 +1925,7 @@ class EMICalculator {
     addEmiChangeEvent() {
         const id = Date.now();
         const currentEMI = this.getCurrentEMI();
-        const defaultDate = this.getDefaultEventDate(12);
+        const defaultDate = this.getDefaultEventDate(1);
         this.advancedEvents.emiChanges.push({
             id,
             date: defaultDate,
